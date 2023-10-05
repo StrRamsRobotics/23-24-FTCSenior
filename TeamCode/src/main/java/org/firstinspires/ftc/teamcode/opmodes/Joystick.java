@@ -18,8 +18,8 @@ public class Joystick extends LinearOpMode {
             float lx = pad.left_stick_x;
             float ly = -pad.left_stick_y;
             float rx = pad.right_stick_x;
-            if (Math.abs(lx)<0.1) lx = 0; if (Math.abs(ly)<0.1) ly=0;
-            lx=smooth(lx);ly=smooth(ly);
+            if (Math.abs(lx)<0.1) lx = 0; if (Math.abs(ly)<0.1) ly=0; if (Math.abs(rx)<0.1) rx = 0;
+            lx=smooth(lx);ly=smooth(ly); rx = smooth(rx);
             Init.fl.setPower(lx + ly+rx);
             Init.fr.setPower(-lx + ly-rx);
             Init.bl.setPower(-lx + ly+rx);
