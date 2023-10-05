@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 public class ServoTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
+
         ServoImplEx servo = hardwareMap.get(ServoImplEx.class, "servo");
         waitForStart();
         servo.setPwmEnable();
