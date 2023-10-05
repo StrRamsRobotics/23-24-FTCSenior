@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 
 @Autonomous(name = "ServoTest")
@@ -10,12 +11,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ServoTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Servo servo = hardwareMap.get(Servo.class, "servo");
+        ServoImplEx servo = hardwareMap.get(ServoImplEx.class, "servo");
         waitForStart();
-        while (opModeIsActive()) {
+        servo.setPwmEnable();
             servo.setPosition(1);
-            sleep(2000);
+            sleep(1000);
             servo.setPosition(0);
-        }
     }
 }
