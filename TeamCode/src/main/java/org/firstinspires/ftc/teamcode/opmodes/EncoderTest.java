@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Init;
 
-@Autonomous(name = "EncoderTest")
+@Autonomous
 public class EncoderTest extends LinearOpMode {
 
     @Override

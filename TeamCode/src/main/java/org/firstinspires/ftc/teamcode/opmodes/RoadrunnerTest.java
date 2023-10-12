@@ -1,31 +1,25 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Rotation2d;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Init;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name="rrtest")
+@Autonomous
 public class RoadrunnerTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Init.init(hardwareMap);
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        Action action = drive.actionBuilder(new Pose2d(0,0,0))
-                .strafeTo(new Vector2d(0,72))
-                .build();
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         waitForStart();
-        TelemetryPacket packet = new TelemetryPacket();
-        action.run(packet);
-        telemetry.addData("a", "ran"); telemetry.update();
+        TrajectorySequence test = drive.trajectorySequenceBuilder(new Pose2d())
+                .strafeRight(48)
+                .lineToLinearHeading(new Pose2d(0, 0, 0))
+                .build();
+        drive.followTrajectorySequence(test);
         while (opModeIsActive()) {}
 
     }
