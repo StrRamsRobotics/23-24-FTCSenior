@@ -53,12 +53,16 @@ public class AprilTagTest extends LinearOpMode {
             ArrayList<AprilTagDetection> detections = pipeline.getLatestDetections();
             tel.addData("size", detections.size());
             for (AprilTagDetection detection : detections) {
-                VectorF rotated = detection.pose.R.transform(new VectorF((float) detection.pose.x, (float) detection.pose.y, (float) detection.pose.z));
+                //note raw pose is in metres
+                float x = (float) detection.pose.x*100;
+                float y = (float) detection.pose.y*100;
+                float z = (float) detection.pose.z*100; //cm now
+                VectorF rotated = detection.pose.R.transform(new VectorF(x, y, z));
                 curX = tagX - rotated.get(0);
                 curY = tagY - rotated.get(2);
                 tel.addData("x", curX);
                 tel.addData("y", curY);
-                tel.addData("raw x", detection.pose.x); tel.addData("raw y", detection.pose.y); tel.addData("raw z", detection.pose.z);
+                tel.addData("raw x", x); tel.addData("raw y", y); tel.addData("raw z", z);
             }
             tel.update();
         }
