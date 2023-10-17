@@ -46,9 +46,9 @@ public class DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    public static double WHEEL_RADIUS = 3.54331; // in
+    public static double WHEEL_RADIUS = 3.54331/2; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 9.252; // in
+    public static double TRACK_WIDTH = 12.51; // in; this has been tuned with trackwidthtuner
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -110,7 +110,7 @@ public class DriveConstants {
      */
     //todo change
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR =
-            RevHubOrientationOnRobot.LogoFacingDirection.UP;
+            RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
     public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR =
             RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
     public static double encoderTicksToInches(double ticks) {
