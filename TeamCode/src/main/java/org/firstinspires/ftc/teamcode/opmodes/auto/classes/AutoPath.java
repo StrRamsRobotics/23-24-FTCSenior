@@ -100,10 +100,8 @@ public class AutoPath {
                         active = false;
                         chassis.fr.setPower(0);
                         chassis.fl.setPower(0);
-                        if (!Chassis.TWO_WHEELED) {
-                            chassis.br.setPower(0);
-                            chassis.bl.setPower(0);
-                        }
+                        chassis.br.setPower(0);
+                        chassis.bl.setPower(0);
                     }
                 }
             }
@@ -112,10 +110,8 @@ public class AutoPath {
             active = false;
             chassis.fr.setPower(0);
             chassis.fl.setPower(0);
-            if (!Chassis.TWO_WHEELED) {
-                chassis.br.setPower(0);
-                chassis.bl.setPower(0);
-            }
+            chassis.br.setPower(0);
+            chassis.bl.setPower(0);
         }
 
         prevTime = currentTime;

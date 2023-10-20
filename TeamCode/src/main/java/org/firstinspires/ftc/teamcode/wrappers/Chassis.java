@@ -29,9 +29,7 @@ public class Chassis {
     public static String FLAP_NAME = "flap";
     public static String CAMERA_NAME = "camera";
 
-    public static final boolean TANK_DRIVE = false;
-    public static final boolean TWO_WHEELED = false;
-    public static final boolean HAS_CHASSIS_ENCODERS = false;
+    public static final boolean HAS_CHASSIS_ENCODERS = true;
 
     public static final boolean HAS_ARM = true;
     public static final boolean HAS_PIVOT = false;
@@ -88,12 +86,10 @@ public class Chassis {
         fr.setDirection(DcMotorEx.Direction.REVERSE);
         fl = hardwareMap.get(DcMotorEx.class, FL_NAME);
         fl.setDirection(DcMotorEx.Direction.FORWARD);
-        if (!TWO_WHEELED) {
-            br = hardwareMap.get(DcMotorEx.class, BR_NAME);
-            br.setDirection(DcMotorEx.Direction.REVERSE);
-            bl = hardwareMap.get(DcMotorEx.class, BL_NAME);
-            bl.setDirection(DcMotorEx.Direction.FORWARD);
-        }
+        br = hardwareMap.get(DcMotorEx.class, BR_NAME);
+        br.setDirection(DcMotorEx.Direction.REVERSE);
+        bl = hardwareMap.get(DcMotorEx.class, BL_NAME);
+        bl.setDirection(DcMotorEx.Direction.FORWARD);
 
         if (HAS_ARM) {
             arm = hardwareMap.get(DcMotorEx.class, ARM_NAME);
@@ -115,19 +111,13 @@ public class Chassis {
         if (HAS_CHASSIS_ENCODERS) {
             fr.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             fl.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-            if (!TWO_WHEELED) {
-                br.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                bl.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            }
+            br.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            bl.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
             fr.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             fl.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-            if (!TWO_WHEELED) {
-                br.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-                bl.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            }
+            br.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            bl.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         }
     }
 

@@ -24,12 +24,11 @@ public class MoveAction extends AutoAction {
     public void tick() {
         chassis.logHelper.addData("Running", "MoveAction");
         if (!isInitialized) {
+            // mecanum
             chassis.fr.setPower(power);
             chassis.fl.setPower(power);
-            if (!Chassis.TWO_WHEELED) {
-                chassis.br.setPower(power);
-                chassis.bl.setPower(power);
-            }
+            chassis.br.setPower(power);
+            chassis.bl.setPower(power);
             isInitialized = true;
         }
         active = false;

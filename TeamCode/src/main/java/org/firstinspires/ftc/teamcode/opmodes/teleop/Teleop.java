@@ -26,28 +26,10 @@ public class Teleop extends BaseTeleop {
         double lx = gamepad1.left_stick_x, ly = gamepad1.left_stick_y, rx = gamepad1.right_stick_x, ry = gamepad1.right_stick_y;
         double lxp = Math.pow(lx, 2), lyp = Math.pow(ly, 2), rxp = Math.pow(rx, 2), ryp = Math.pow(ry, 2);
         boolean a = gamepad1.a, b = gamepad1.b, x = gamepad1.x, y = gamepad1.y;
-        if (Chassis.TANK_DRIVE) {
-            // Tank drive
-            chassis.fl.setPower(MathHelper.deadzone(lyp, JOYSTICK_DEADZONE));
-            chassis.bl.setPower(MathHelper.deadzone(lyp, JOYSTICK_DEADZONE));
-            chassis.fr.setPower(MathHelper.deadzone(ryp, JOYSTICK_DEADZONE));
-            chassis.br.setPower(MathHelper.deadzone(ryp, JOYSTICK_DEADZONE));
-            // two wheeled
-            if (Chassis.TWO_WHEELED) {
-                chassis.bl.setPower(MathHelper.deadzone(lyp, JOYSTICK_DEADZONE));
-                chassis.br.setPower(MathHelper.deadzone(ryp, JOYSTICK_DEADZONE));
-            }
-        } else {
-            // Arcade drive
-            chassis.fl.setPower(MathHelper.deadzone(lyp - rxp, JOYSTICK_DEADZONE));
-            chassis.bl.setPower(MathHelper.deadzone(lyp - rxp, JOYSTICK_DEADZONE));
-            chassis.fr.setPower(MathHelper.deadzone(lyp + rxp, JOYSTICK_DEADZONE));
-            chassis.br.setPower(MathHelper.deadzone(lyp + rxp, JOYSTICK_DEADZONE));
-            if (Chassis.TWO_WHEELED) {
-                chassis.bl.setPower(MathHelper.deadzone(lyp - rxp, JOYSTICK_DEADZONE));
-                chassis.br.setPower(MathHelper.deadzone(lyp + rxp, JOYSTICK_DEADZONE));
-            }
-        }
+        chassis.fr.setPower(MathHelper.deadzone(-lxp + -lyp - rxp, JOYSTICK_DEADZONE));
+        chassis.fl.setPower(MathHelper.deadzone(lxp + -lyp - rxp, JOYSTICK_DEADZONE));
+        chassis.br.setPower(MathHelper.deadzone(-lxp + lyp - rxp, JOYSTICK_DEADZONE));
+        chassis.bl.setPower(MathHelper.deadzone(lxp + lyp - rxp, JOYSTICK_DEADZONE));
     }
 
     public void controlGP2() {

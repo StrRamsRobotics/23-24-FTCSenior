@@ -39,23 +39,16 @@ public class TurnAction extends AutoAction {
         chassis.logHelper.addData("Distance", distance);
         chassis.logHelper.addData("ArcLength", arcLength);
         if (distance < arcLength) {
+            // mecanum
             chassis.fr.setPower(power);
             chassis.fl.setPower(-power);
-            if (!Chassis.TWO_WHEELED) {
-                chassis.br.setPower(power);
-                chassis.bl.setPower(-power);
-            }
-            chassis.logHelper.addData("Power FR", power);
-            chassis.logHelper.addData("Power FL", -power);
-            chassis.logHelper.addData("Power BR", power);
-            chassis.logHelper.addData("Power BL", -power);
+            chassis.br.setPower(power);
+            chassis.bl.setPower(-power);
         } else {
             chassis.fr.setPower(0);
             chassis.fl.setPower(0);
-            if (!Chassis.TWO_WHEELED) {
-                chassis.br.setPower(0);
-                chassis.bl.setPower(0);
-            }
+            chassis.br.setPower(0);
+            chassis.bl.setPower(0);
             active = false;
         }
     }

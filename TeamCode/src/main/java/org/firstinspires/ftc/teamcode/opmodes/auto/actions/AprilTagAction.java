@@ -94,29 +94,23 @@ public class AprilTagAction extends AutoAction {
                             detection.id == RIGHT_RED_ID && route == 2 && team == Game.RED_TEAM
                     ) {
                         if (detection.pose.x >= DETECTION_X) {
-                            chassis.logHelper.addData("AprilTag Action", "Turn Left");
+                            chassis.logHelper.addData("AprilTag Action", "Strafe Left");
                             chassis.fr.setPower(Chassis.MOVE_POWER);
-                            chassis.fl.setPower(0);
-                            if (!Chassis.TWO_WHEELED) {
-                                chassis.br.setPower(Chassis.MOVE_POWER);
-                                chassis.bl.setPower(0);
-                            }
+                            chassis.fl.setPower(-Chassis.MOVE_POWER);
+                            chassis.br.setPower(-Chassis.MOVE_POWER);
+                            chassis.bl.setPower(Chassis.MOVE_POWER);
                         } else if (detection.pose.x <= -DETECTION_X) {
-                            chassis.logHelper.addData("AprilTag Action", "Turn Right");
+                            chassis.logHelper.addData("AprilTag Action", "Strafe Right");
+                            chassis.fr.setPower(-Chassis.MOVE_POWER);
                             chassis.fl.setPower(Chassis.MOVE_POWER);
-                            chassis.fr.setPower(0);
-                            if (!Chassis.TWO_WHEELED) {
-                                chassis.bl.setPower(Chassis.MOVE_POWER);
-                                chassis.br.setPower(0);
-                            }
+                            chassis.br.setPower(Chassis.MOVE_POWER);
+                            chassis.bl.setPower(-Chassis.MOVE_POWER);
                         } else {
                             chassis.logHelper.addData("AprilTag Action", "AprilTag Centered");
                             chassis.fl.setPower(0);
                             chassis.fr.setPower(0);
-                            if (!Chassis.TWO_WHEELED) {
-                                chassis.bl.setPower(0);
-                                chassis.br.setPower(0);
-                            }
+                            chassis.bl.setPower(0);
+                            chassis.br.setPower(0);
                             chassis.camera.closeCameraDeviceAsync(() -> {
                             });
                             active = false;
