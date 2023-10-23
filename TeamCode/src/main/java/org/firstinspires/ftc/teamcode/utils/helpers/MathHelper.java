@@ -26,4 +26,12 @@ public class MathHelper {
             return angle;
         }
     }
+
+    public static double percentChange(double value1, double value2) {
+        return (value2 - value1) / value1;
+    }
+
+    public static double percentError(double value1, double value2) {
+        return Math.abs(percentChange(value1, value2)) * 100;
+    }
 }
