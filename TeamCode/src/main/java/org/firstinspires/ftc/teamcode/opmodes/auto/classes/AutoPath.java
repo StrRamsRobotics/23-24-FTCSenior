@@ -128,8 +128,12 @@ public class AutoPath {
         position = new Position(DistanceUnit.INCH, position.x + IMUPosition.x, position.y + IMUPosition.y, 0, 0);
         chassis.logHelper.addData("IMU X", IMUPosition.x);
         chassis.logHelper.addData("IMU Y", IMUPosition.y);
+        chassis.logHelper.addData("IMU Fixed X", position.x);
+        chassis.logHelper.addData("IMU Fixed Y", position.y);
+        chassis.logHelper.addData("IMU Heading", chassis.getHeading());
         chassis.logHelper.addData("Error X", MathHelper.percentError(position.x, currentPoint.x));
         chassis.logHelper.addData("Error Y", MathHelper.percentError(position.y, currentPoint.y));
         chassis.logHelper.addData("Total error", MathHelper.percentError(position.x, currentPoint.x) + MathHelper.percentError(position.y, currentPoint.y));
+        chassis.logHelper.addData("Error heading", MathHelper.percentError(chassis.getHeading(), currentPoint.heading));
     }
 }
