@@ -26,7 +26,7 @@ public class Joystick extends LinearOpMode {
             tel.addData("raw rx", rx);
             tel.update();
             if (Math.abs(lx)<0.1) lx = 0; if (Math.abs(ly)<0.1) ly=0; if (Math.abs(rx)<0.1) rx = 0;
-            lx=smooth(lx);ly=smooth(ly); rx = smooth(rx); //todo why does rotating work on ry instead of rx actually it's bc it reverses when plugged in laptop
+            lx=smooth(lx);ly=smooth(ly); rx = smooth(rx); //rx+ry reverses when plugged in laptop
             Init.fl.setPower(lx + ly+rx);
             Init.fr.setPower(-lx + ly-rx);
             Init.bl.setPower(-lx + ly+rx);
@@ -34,6 +34,6 @@ public class Joystick extends LinearOpMode {
          }
     }
     private float smooth(float in) {
-        return (float) (Math.signum(in)*(Math.pow(2, Math.abs(in))-1));
+        return in*in*in; //more non-linear than 2^x
     }
 }

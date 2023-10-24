@@ -1,6 +1,7 @@
 package com.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.noahbres.meepmeep.MeepMeep;
@@ -14,10 +15,12 @@ public class MyClass {
         System.setProperty("sun.java2d.uiScale", "1.0");
         MeepMeep meepMeep = new MeepMeep(800);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                .setStartPose(new Pose2d(-36, 60, Math.toRadians(-90)))
+                //.setStartPose(new Pose2d(-36, 60, Math.toRadians(-90)))
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(300, 300, Math.toRadians(1440), Math.toRadians(720), 15).build();
-
+                .setConstraints(300, 300, Math.toRadians(1440), Math.toRadians(720), 15)
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d())
+                        .lineToLinearHeading(new Pose2d(48, 0, Math.PI))
+                        .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)

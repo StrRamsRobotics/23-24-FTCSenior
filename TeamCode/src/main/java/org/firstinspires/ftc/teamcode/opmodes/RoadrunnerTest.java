@@ -16,8 +16,7 @@ public class RoadrunnerTest extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         waitForStart();
         TrajectorySequence test = drive.trajectorySequenceBuilder(new Pose2d())
-                .strafeRight(48)
-                .lineToLinearHeading(new Pose2d(0, 0, 0))
+                .lineToLinearHeading(new Pose2d(48, 0, Math.PI))
                 .build();
         drive.followTrajectorySequence(test);
         while (opModeIsActive()) {}

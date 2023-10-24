@@ -15,6 +15,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class Init {
     public static OpenCvWebcam camera;
     public static DcMotor fl, fr, bl, br;
+    public static final double METRES_TO_INCHES = 39.3701;
     public static void init(HardwareMap hardwareMap) {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         FtcDashboard.start(null);
@@ -32,7 +33,7 @@ public class Init {
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT); //todo this is for test robot
                 FtcDashboard.getInstance().startCameraStream(camera, 30);
             }
 
