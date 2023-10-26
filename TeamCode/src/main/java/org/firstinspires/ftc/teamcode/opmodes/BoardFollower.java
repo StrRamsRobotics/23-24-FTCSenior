@@ -1,37 +1,32 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.function.Consumer;
-import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
-import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.CameraStreamProcessor;
-import org.firstinspires.ftc.teamcode.Init;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 //todo only usable once we get apriltags installed on field
+//apparently we're just doing this to face the board straightly (24 inches in front of board)
 @Autonomous
-public class FtcAprilTagTest extends LinearOpMode {
+public class BoardFollower extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         //no init for this bc diff camera init
@@ -52,25 +47,36 @@ public class FtcAprilTagTest extends LinearOpMode {
                 .setCameraResolution(new Size(320, 240))
                 .build();
         FtcDashboard.getInstance().startCameraStream(streamer, 30);
-        double curX = 0, curY = 0;
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {
+            AprilTagPoseFtc target = null;
+            TelemetryPacket packet = new TelemetryPacket();
             ArrayList<AprilTagDetection> detections= aprilProcessor.getDetections();
             for (AprilTagDetection detection : detections) {
+                if (!detection.metadata.name.contains("AllianceCenter")) {
+                    continue;
+                }
+                if (target==null) {
+                    target = detection.ftcPose;
+                }
                 tel.addData("bearing", Math.toDegrees(detection.ftcPose.bearing));
-                double heading = detection.metadata.fieldOrientation.z + Math.PI*2-detection.ftcPose.yaw; //this should make sense
-                //fieldorientation is degrees CCW from ref (red alliance station) eg. mosaic apriltags are 90 degrees
-                double rotX = Math.cos(heading) * detection.ftcPose.x - Math.sin(heading) * detection.ftcPose.y;
-                double rotY = Math.sin(heading) * detection.ftcPose.x + Math.cos(heading) * detection.ftcPose.y;
-
-                curX = detection.metadata.fieldPosition.get(0)-rotX;
-                curY = detection.metadata.fieldPosition.get(1)-rotY;
-                tel.addData("x", curX);
-                tel.addData("y", curY);
-                tel.addData("heading", Math.toDegrees(heading));
-                tel.update();
             }
+            Pose2d cur = drive.getPoseEstimate();
+            packet.fieldOverlay().setFill("blue").fillCircle(cur.getX(), cur.getY(), 25);
+
+            if (target==null) {
+                continue;
+            }
+            double x = cur.getX() - target.x;
+            double y = cur.getY() - (target.y - Math.signum(target.y) * 24);
+            packet.fieldOverlay().setFill("green").fillCircle(x, y, 25);
+            FtcDashboard.getInstance().sendTelemetryPacket(packet);
+            Trajectory traj = drive.trajectoryBuilder(cur)
+                    .lineToLinearHeading(new Pose2d(x, y, target.bearing))
+                    .build();
+            drive.followTrajectory(traj);
         }
     }
 }

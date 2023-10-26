@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import static org.firstinspires.ftc.teamcode.Init.METRES_TO_INCHES;
+import static org.firstinspires.ftc.teamcode.Init.drive;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -40,7 +41,6 @@ public class AprilTagFollower extends LinearOpMode {
         Init.camera.setPipeline(pipeline);
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry tel = dashboard.getTelemetry();
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d(0, 0, Math.PI/2));
         waitForStart();
         boolean following = false;
