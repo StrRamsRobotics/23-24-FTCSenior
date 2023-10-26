@@ -49,13 +49,14 @@ public class BoardFollower extends LinearOpMode {
         FtcDashboard.getInstance().startCameraStream(streamer, 30);
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setPoseEstimate(new Pose2d(12, 36, 0));
         waitForStart();
         while (opModeIsActive()) {
             AprilTagPoseFtc target = null;
             TelemetryPacket packet = new TelemetryPacket();
             ArrayList<AprilTagDetection> detections= aprilProcessor.getDetections();
             for (AprilTagDetection detection : detections) {
-                if (!detection.metadata.name.contains("AllianceCenter")) {
+                if (!detection.metadata.name.contains("AllianceCenter")) { //todo filter for our specific team
                     continue;
                 }
                 if (target==null) {
