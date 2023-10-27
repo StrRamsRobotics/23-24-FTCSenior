@@ -1,9 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static org.firstinspires.ftc.teamcode.Init.CM_TO_INCH;
+import static org.firstinspires.ftc.teamcode.Init.aprilTagProcessor;
+
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -14,6 +19,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.CameraStreamProcessor;
+import org.firstinspires.ftc.teamcode.Init;
+import org.firstinspires.ftc.teamcode.PDController;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -23,61 +30,46 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 
-//todo only usable once we get apriltags installed on field
 //apparently we're just doing this to face the board straightly (24 inches in front of board)
+@Config
 @Autonomous
 public class BoardFollower extends LinearOpMode {
+    //not supporting I
+    public static PIDCoefficients RANGE_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients BEARING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients YAW_PID = new PIDCoefficients(0, 0, 0);
+    public static double RANGE_STOP = 24;
+    //offsets from centre of robot to camera todo maybe try without camx and camy first
+    public static double CAM_X = -9*CM_TO_INCH, CAM_Y =6*CM_TO_INCH;
     @Override
     public void runOpMode() throws InterruptedException {
-        //no init for this bc diff camera init
-        CameraStreamProcessor streamer = new CameraStreamProcessor();
-        AprilTagProcessor aprilProcessor = new AprilTagProcessor.Builder()
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setDrawTagOutline(true)
-                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                .setOutputUnits(DistanceUnit.INCH, AngleUnit.RADIANS)
-                .setLensIntrinsics(1430, 1430, 480, 620)
-                .build();
-        VisionPortal portal = new VisionPortal.Builder()
-                .addProcessor(aprilProcessor)
-                .addProcessor(streamer)
-                .setCamera(hardwareMap.get(WebcamName.class, "camera"))
-                .setCameraResolution(new Size(320, 240))
-                .build();
-        FtcDashboard.getInstance().startCameraStream(streamer, 30);
+        Init.init(hardwareMap);
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(12, 36, 0));
+        PDController rangeController = new PDController(RANGE_PID);
+        PDController bearingController = new PDController(BEARING_PID);
+        PDController yawController = new PDController(YAW_PID);
         waitForStart();
         while (opModeIsActive()) {
-            AprilTagPoseFtc target = null;
-            TelemetryPacket packet = new TelemetryPacket();
-            ArrayList<AprilTagDetection> detections= aprilProcessor.getDetections();
+            ArrayList<AprilTagDetection> detections = aprilTagProcessor.getDetections();
             for (AprilTagDetection detection : detections) {
-                if (!detection.metadata.name.contains("AllianceCenter")) { //todo filter for our specific team
-                    continue;
+                if (detection.id == 2) { //2 for blue, 5 for red
+                    tel.addData("bearing", Math.toDegrees(detection.ftcPose.bearing)); //rotate CCW
+                    tel.addData("range", detection.ftcPose.range-RANGE_STOP); //move forward
+                    tel.addData("yaw", detection.ftcPose.yaw);//move right todo it might be move left?
+                    double bPower = bearingController.update(detection.ftcPose.bearing);
+                    double rPower = rangeController.update(detection.ftcPose.range-RANGE_STOP+CAM_Y);
+                    double yPower = yawController.update(detection.ftcPose.yaw+CAM_X);
+                    tel.addData("bPower", bPower);
+                    tel.addData("rPower", rPower);
+                    tel.addData("yPower", yPower);
+                    Init.fl.setPower(yPower-bPower+rPower);
+                    Init.fr.setPower(-yPower+bPower+rPower);
+                    Init.bl.setPower(-yPower-bPower+rPower);
+                    Init.br.setPower(yPower+bPower+rPower);
+                    tel.update();
+                    break;
                 }
-                if (target==null) {
-                    target = detection.ftcPose;
-                }
-                tel.addData("bearing", Math.toDegrees(detection.ftcPose.bearing));
             }
-            Pose2d cur = drive.getPoseEstimate();
-            packet.fieldOverlay().setFill("blue").fillCircle(cur.getX(), cur.getY(), 25);
-
-            if (target==null) {
-                continue;
-            }
-            double x = cur.getX() - target.x;
-            double y = cur.getY() - (target.y - Math.signum(target.y) * 24);
-            packet.fieldOverlay().setFill("green").fillCircle(x, y, 25);
-            FtcDashboard.getInstance().sendTelemetryPacket(packet);
-            Trajectory traj = drive.trajectoryBuilder(cur)
-                    .lineToLinearHeading(new Pose2d(x, y, target.bearing))
-                    .build();
-            drive.followTrajectory(traj);
         }
     }
 }

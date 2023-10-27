@@ -17,7 +17,6 @@ public class Joystick extends LinearOpMode {
         Gamepad pad = this.gamepad1;
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
         while (opModeIsActive()) {
-
             float lx = pad.left_stick_x;
             float ly = -pad.left_stick_y;
             float rx = pad.right_stick_x;
@@ -27,10 +26,10 @@ public class Joystick extends LinearOpMode {
             tel.update();
             if (Math.abs(lx)<0.1) lx = 0; if (Math.abs(ly)<0.1) ly=0; if (Math.abs(rx)<0.1) rx = 0;
             lx=smooth(lx);ly=smooth(ly); rx = smooth(rx); //rx+ry reverses when plugged in laptop
-            Init.fl.setPower(lx + ly+rx);
-            Init.fr.setPower(-lx + ly-rx);
-            Init.bl.setPower(-lx + ly+rx);
-            Init.br.setPower(lx + ly-rx);
+            Init.fl.setPower(Math.min(1, lx + ly+rx));
+            Init.fr.setPower(Math.min(1, -lx + ly-rx));
+            Init.bl.setPower(Math.min(1, -lx + ly+rx));
+            Init.br.setPower(Math.min(1, lx + ly-rx));
          }
     }
     private float smooth(float in) {

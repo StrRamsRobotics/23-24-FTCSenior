@@ -1,19 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static org.firstinspires.ftc.teamcode.Init.METRES_TO_INCHES;
-
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.Init;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
@@ -24,6 +18,7 @@ import org.openftc.apriltag.AprilTagDetection;
 import java.util.ArrayList;
 
 @Autonomous
+@Disabled //bc don't wanna refactor this to visionportal
 public class AprilTagTest extends LinearOpMode {
     @SuppressLint("DefaultLocale")
     @Override
@@ -42,7 +37,7 @@ public class AprilTagTest extends LinearOpMode {
         AprilTagLibrary lib = AprilTagGameDatabase.getCenterStageTagLibrary();
         AprilTagDetectionPipeline pipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
         Init.init(hardwareMap);
-        Init.camera.setPipeline(pipeline);
+        //Init.camera.setPipeline(pipeline);
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry tel = dashboard.getTelemetry();
         waitForStart();
@@ -68,8 +63,5 @@ public class AprilTagTest extends LinearOpMode {
             }
             tel.update();
         }
-        dashboard.stopCameraStream();
-        Init.camera.closeCameraDeviceAsync(() -> {
-        });
     }
 }

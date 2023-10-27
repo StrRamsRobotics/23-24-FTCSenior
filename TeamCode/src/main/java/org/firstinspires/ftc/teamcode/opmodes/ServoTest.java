@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-//todo test this again
 @Config
 @Autonomous
 public class ServoTest extends LinearOpMode {
