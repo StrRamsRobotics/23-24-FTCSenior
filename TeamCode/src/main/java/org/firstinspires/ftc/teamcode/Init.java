@@ -14,6 +14,10 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 public class Init {
     public enum Team {
@@ -22,8 +26,7 @@ public class Init {
     public enum Side {
         LEFT, RIGHT
     }
-    public static  VisionPortal portal;
-    public static AprilTagProcessor aprilTagProcessor;
+    public static OpenCvWebcam camera;
     public static DcMotor fl, fr, bl, br;
     public static final double METRES_TO_INCH = 39.3701;
     public static final double CM_TO_INCH = 0.393701;
@@ -41,24 +44,21 @@ public class Init {
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        CameraStreamProcessor streamer = new CameraStreamProcessor();
-        aprilTagProcessor = new AprilTagProcessor.Builder()
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setDrawTagOutline(true)
-                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                .setOutputUnits(DistanceUnit.INCH, AngleUnit.RADIANS)
-                .setLensIntrinsics(1430, 1430, 480, 620)
-                .build();
-        portal = new VisionPortal.Builder()
-                .addProcessor(aprilTagProcessor)
-                .addProcessor(streamer)
-                .setCamera(hardwareMap.get(WebcamName.class, "camera"))
-                .setCameraResolution(new Size(320, 240))
-                .build();
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(640, 480, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                FtcDashboard.getInstance().startCameraStream(camera, 30);
+            }
 
-        FtcDashboard.getInstance().startCameraStream(streamer, 30);
+            @Override
+            public void onError(int errorCode) {
+            }
+        });
+
+        FtcDashboard.getInstance().startCameraStream(camera, 30);
     }
 
 }
