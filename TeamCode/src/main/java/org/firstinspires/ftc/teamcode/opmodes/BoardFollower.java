@@ -35,10 +35,12 @@ import java.util.ArrayList;
 @Autonomous
 public class BoardFollower extends LinearOpMode {
     //not supporting I
-    public static PIDCoefficients RANGE_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients BEARING_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients YAW_PID = new PIDCoefficients(0, 0, 0);
-    public static double RANGE_STOP = 12;
+    //error is in metres and radians
+    public static PIDCoefficients RANGE_PID = new PIDCoefficients(1, 0, 0);
+    public static PIDCoefficients BEARING_PID = new PIDCoefficients(2, 0, 0);
+    public static PIDCoefficients YAW_PID = new PIDCoefficients(2, 0, 0);
+    public static double RANGE_STOP = 24/METRES_TO_INCH;
+    public static int LEFT_ID=5, CENTRE_ID=5,RIGHT_ID=5;
     //only support moving based on camera pos bc otherwise camera might not see the tag preemptively
     @Override
     public void runOpMode() throws InterruptedException {
@@ -47,13 +49,14 @@ public class BoardFollower extends LinearOpMode {
         PDController rangeController = new PDController(RANGE_PID);
         PDController bearingController = new PDController(BEARING_PID);
         PDController yawController = new PDController(YAW_PID);
-        AprilTagDetectionPipeline pipeline = new AprilTagDetectionPipeline(2/METRES_TO_INCH, 822.317, 822.317, 319.495f, 242.502f);
-
+        AprilTagDetectionPipeline pipeline = new AprilTagDetectionPipeline(2/METRES_TO_INCH, 947.118203072, 947.118203072, 357.858233883, 252.027176542);
+        Init.camera.setPipeline(pipeline);
         waitForStart();
+        int cur = 0;
         while (opModeIsActive()) {
             ArrayList<AprilTagDetection> detections = pipeline.getLatestDetections();
-            //this is for blue
-            AprilTagDetection centre = findTag(detections, 2), left = findTag(detections, 1), right = findTag(detections, 3);
+            //this is for red
+            AprilTagDetection centre = findTag(detections, CENTRE_ID), left = findTag(detections, LEFT_ID), right = findTag(detections, RIGHT_ID);
             AprilTagDetection tag = centre != null ? centre : left != null ? left : right;
             if (tag==null) {
                 tel.addData("No tag found", "stopping...");
@@ -63,6 +66,12 @@ public class BoardFollower extends LinearOpMode {
                 Init.bl.setPower(0);
                 Init.br.setPower(0);
                 continue;
+            }
+            if (cur != tag.id) {
+                bearingController.reset();
+                yawController.reset();
+                rangeController.reset();
+                tel.addData("resetting controllers", "a");
             }
             AprilTagPoseFtc pose = poseToFtc(tag.pose);
             tel.addData("Id", tag.id);
@@ -80,6 +89,7 @@ public class BoardFollower extends LinearOpMode {
             Init.bl.setPower(-yPower-bPower+rPower);
             Init.br.setPower(yPower+bPower+rPower);
             tel.update();
+            cur = tag.id;
         }
     }
 

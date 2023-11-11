@@ -13,6 +13,11 @@ public class PDController {
         prevTime = 0;
     }
 
+    public void reset() {
+        prevError = 0;
+        prevTime = 0;
+    }
+
     public double update(double error) {
         double currentTime = System.currentTimeMillis();
         double dt = currentTime - prevTime;

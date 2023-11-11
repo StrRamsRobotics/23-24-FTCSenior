@@ -12,7 +12,6 @@ public class VoltageChecker extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        FtcDashboard.start(null);
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
         waitForStart();
         while (opModeIsActive()) {
