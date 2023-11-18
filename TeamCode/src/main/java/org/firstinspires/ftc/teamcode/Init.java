@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -31,6 +32,7 @@ public class Init {
     public static final double METRES_TO_INCH = 39.3701;
     public static final double CM_TO_INCH = 0.393701;
     public static SampleMecanumDrive drive;
+    public static CRServoImplEx intake;
     public static void init(HardwareMap hardwareMap) {
         drive = new SampleMecanumDrive(hardwareMap);
         FtcDashboard.start(null);
@@ -38,6 +40,7 @@ public class Init {
         fr = hardwareMap.get(DcMotor.class, "fr");
         bl = hardwareMap.get(DcMotor.class, "bl");
         br = hardwareMap.get(DcMotor.class, "br");
+        intake = hardwareMap.get(CRServoImplEx.class, "servo");
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

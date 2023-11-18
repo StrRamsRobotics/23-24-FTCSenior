@@ -17,6 +17,15 @@ public class Joystick extends LinearOpMode {
         Gamepad pad = this.gamepad1;
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
         while (opModeIsActive()) {
+            float ltrigger = pad.left_trigger, rtrigger = pad.right_trigger;
+            if (Math.abs(ltrigger)<0.1) ltrigger = 0;
+            if (Math.abs(rtrigger)<0.1) rtrigger = 0;
+            double intakePower = -(-ltrigger+rtrigger); //invert to make more sense for driver
+            if (intakePower<0) intakePower = Math.max(-0.9, intakePower);
+            if (intakePower>0) intakePower = Math.min(0.9, intakePower);
+            Init.intake.setPower(intakePower);
+            tel.addData("intake", intakePower);
+            Init.intake.setPower(intakePower);
             float lx = pad.left_stick_x;
             float ly = -pad.left_stick_y;
             float rx = pad.right_stick_x;

@@ -2,27 +2,24 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
-@TeleOp
-public class ServoTest extends LinearOpMode {
-    public static double pos =0;
+@Autonomous
+public class CRServoTest extends LinearOpMode {
+    public static double power = 0.9;//note that 1 doen't work (there's a max power)
     @Override
     public void runOpMode() throws InterruptedException {
-        Servo servo = hardwareMap.get(Servo.class, "servo");
-        waitForStart();
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
+        CRServoImplEx servo = hardwareMap.get(CRServoImplEx.class, "servo");
+        waitForStart();
         while (opModeIsActive()) {
-            servo.setPosition(pos);
-            tel.addData("seting pos to ", pos);
-            tel.update();
+            servo.setPower(power);
+            tel.addData("p", servo.getPower()); tel.update();
         }
-
     }
 }
