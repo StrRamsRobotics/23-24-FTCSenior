@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode.drive;
-//todo this is for the test robot
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -57,13 +56,13 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.018;
-    public static double kA = 0.001;
-    public static double kStatic = 0.02;
+    public static double kV = 0.017;
+    public static double kA = 0.002;
+    public static double kStatic = 0.01;
 
-    public static double MAX_VEL = 51.104936929697374;
+    public static double MAX_VEL = 44.320135765335074;
     public static double MAX_ACCEL = MAX_VEL; //jsut for convenience
-    public static double MAX_ANG_VEL = Math.toRadians(215.51821970338983);
+    public static double MAX_ANG_VEL = Math.toRadians(180.0026427966102);
     public static double MAX_ANG_ACCEL = MAX_ANG_VEL; //alsof or convenience
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR =
             RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
