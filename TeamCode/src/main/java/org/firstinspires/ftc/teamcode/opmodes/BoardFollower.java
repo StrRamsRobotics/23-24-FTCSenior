@@ -58,10 +58,10 @@ public class BoardFollower extends LinearOpMode {
             if (tag==null) {
                 tel.addData("No tag found", "stopping...");
                 tel.update();
-                Init.fl.setPower(0);
-                Init.fr.setPower(0);
-                Init.bl.setPower(0);
-                Init.br.setPower(0);
+                Init.frontLeftDrive.setPower(0);
+                Init.frontRightDrive.setPower(0);
+                Init.backLeftDrive.setPower(0);
+                Init.backRightDrive.setPower(0);
                 continue;
             }
             AprilTagPoseFtc pose = poseToFtc(tag.pose);
@@ -75,10 +75,10 @@ public class BoardFollower extends LinearOpMode {
             tel.addData("bPower", bPower);
             tel.addData("rPower", rPower);
             tel.addData("yPower", yPower);
-            Init.fl.setPower(yPower-bPower+rPower);
-            Init.fr.setPower(-yPower+bPower+rPower);
-            Init.bl.setPower(-yPower-bPower+rPower);
-            Init.br.setPower(yPower+bPower+rPower);
+            Init.frontLeftDrive.setPower(yPower-bPower+rPower);
+            Init.frontRightDrive.setPower(-yPower+bPower+rPower);
+            Init.backLeftDrive.setPower(-yPower-bPower+rPower);
+            Init.backRightDrive.setPower(yPower+bPower+rPower);
             tel.update();
         }
     }
