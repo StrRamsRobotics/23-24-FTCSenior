@@ -33,21 +33,23 @@ public class Init {
     public static final double CM_TO_INCH = 0.393701;
     public static SampleMecanumDrive drive;
     public static CRServoImplEx intake;
+    public static DcMotor rClimb;
     public static void init(HardwareMap hardwareMap) {
         drive = new SampleMecanumDrive(hardwareMap);
         FtcDashboard.start(null);
-        fl = hardwareMap.get(DcMotor.class, "fl");
-        fr = hardwareMap.get(DcMotor.class, "fr");
-        bl = hardwareMap.get(DcMotor.class, "bl");
-        br = hardwareMap.get(DcMotor.class, "br");
-        intake = hardwareMap.get(CRServoImplEx.class, "servo");
+        fl = hardwareMap.get(DcMotor.class, "frontLeft");
+        fr = hardwareMap.get(DcMotor.class, "frontRight");
+        bl = hardwareMap.get(DcMotor.class, "backLeft");
+        br = hardwareMap.get(DcMotor.class, "backRight");
+        rClimb = hardwareMap.get(DcMotor.class, "rightClimb");
+        intake = hardwareMap.get(CRServoImplEx.class, "intake");
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        /*int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -61,7 +63,7 @@ public class Init {
             }
         });
 
-        FtcDashboard.getInstance().startCameraStream(camera, 30);
+        FtcDashboard.getInstance().startCameraStream(camera, 30);*/
     }
 
 }

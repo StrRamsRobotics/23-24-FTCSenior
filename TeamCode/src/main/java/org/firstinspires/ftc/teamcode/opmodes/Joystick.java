@@ -18,6 +18,8 @@ public class Joystick extends LinearOpMode {
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
         while (opModeIsActive()) {
             float ltrigger = pad.left_trigger, rtrigger = pad.right_trigger;
+            Init.rClimb.setPower(pad.a?1:0);
+            Init.rClimb.setPower((pad.a?1:0)+(pad.b?-1:0));
             if (Math.abs(ltrigger)<0.1) ltrigger = 0;
             if (Math.abs(rtrigger)<0.1) rtrigger = 0;
             double intakePower = -(-ltrigger+rtrigger); //invert to make more sense for driver
