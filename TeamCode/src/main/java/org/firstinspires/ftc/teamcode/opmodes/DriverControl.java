@@ -48,6 +48,9 @@ public class DriverControl extends LinearOpMode {
 
             Init.leftClimb.setPower((chassisControl.y?1:0)-(chassisControl.a?1:0));
             Init.rightClimb.setPower((chassisControl.y?1:0)-(chassisControl.a?1:0));
+            telemetry.addData("left climb", Init.leftClimb.getCurrentPosition());
+            telemetry.addData("right climb", Init.rightClimb.getCurrentPosition());
+            telemetry.update();
 
             Init.intakeTilt.setPosition(1-chassisControl.left_trigger);
             Init.intake.setPower((chassisControl.right_bumper?0.7:0)-(chassisControl.left_bumper?0.7:0));
@@ -55,7 +58,7 @@ public class DriverControl extends LinearOpMode {
             slidePosition += 10*(int)armControl.left_stick_y;
             slides.runSlide(slidePosition, 0.7);
             if (armControl.a) Init.outtake.setPosition(Outtake.EXTENSION_POS);
-            else Init.outtake.setPosition(Outtake.RETRACTION_POS);
+            else Init.outtake.setPosition(Outtake.RETRACTION_POS); //4101
         }
     }
     private double smooth(double in) {

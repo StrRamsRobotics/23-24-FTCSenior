@@ -23,35 +23,40 @@ public class AprilTagDriver {
         pipeline = new AprilTagDetectionPipeline(0.0508, 947.118203072, 947.118203072, 357.858233883, 252.027176542);
     }
 
-    public Pose2d getCoords(int id) {
+    public Pose2d getCoords(int id) throws InterruptedException {
+
         camera.setPipeline(pipeline);
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AprilTagDetection cur = null;
-            boolean flag = false;
-            while (!flag) {
-                ArrayList<AprilTagDetection> det = pipeline.getLatestDetections();
-                for (AprilTagDetection d : det) {
-                    if (d.id == id) {
-                        flag = true;
-                        cur = d;
-                        break;
-                    }
+        AprilTagDetection cur = null;
+        boolean flag = false;
+        while (!flag) {
+            ArrayList<AprilTagDetection> det = pipeline.getLatestDetections();
+            for (AprilTagDetection d : det) {
+                if (d.id == id) {
+                    flag = true;
+                    cur = d;
+                    break;
                 }
             }
-            AprilTagPoseFtc pose = poseToFtc(cur.pose);
-
-        });
-        return null;
+            Thread.sleep(10);
+        }
+        AprilTagPoseFtc pose = poseToFtc(cur.pose);
+        return darren(pose);
     }
+
     private Pose2d darren(AprilTagPoseFtc pose) {
         double theta = pose.yaw;
         double alpha = Init.drive.getPoseEstimate().getHeading();
         double dx = pose.x, dy = pose.y;
-        double x0 = 0, y0 = 0; //todo x0 y0 is offset from camera to centre of robot
-        double h = 24;
+        double x0 = 0, y0 = 0.2;
+        double h = 0.6096;
+        double vx = dx + x0 * (1 - Math.cos(theta)) + y0 * Math.sin(theta) + h * Math.sin(theta);
+        double vy = dy + y0 * (1 - Math.cos(theta)) - x0 * Math.sin(theta) - h * Math.cos(theta);
+        double ansx = vx * Math.cos(alpha) - vy * Math.sin(alpha);
+        double ansy = vx * Math.sin(alpha) + vy * Math.cos(alpha);
 
-        return null;
+        return new Pose2d(ansy*39.3701, ansx*39.3701, theta);
     }
+
     private AprilTagPoseFtc poseToFtc(AprilTagPose detection) {
         double x = detection.x;
         double y = detection.z;
@@ -68,4 +73,4 @@ public class AprilTagDriver {
         return new AprilTagPoseFtc(x, y, z, yaw, roll, pitch, range, bearing, elevation);
 
     }
-    }
+}

@@ -46,6 +46,7 @@ public class Init {
     public static Servo outtake, intakeTilt;
     public static Outtake out;
     public static Intake in;
+    public static AprilTagDriver april;
     public static void init(HardwareMap hardwareMap) {
         drive = new SampleMecanumDrive(hardwareMap);
         FtcDashboard.start(null);
@@ -69,6 +70,7 @@ public class Init {
         backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightClimb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -81,6 +83,8 @@ public class Init {
         backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightClimb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftClimb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -88,6 +92,7 @@ public class Init {
         backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightClimb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         out = new Outtake(hardwareMap);
         in = new Intake(hardwareMap);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -95,7 +100,8 @@ public class Init {
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(640, 480, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                april = new AprilTagDriver(camera);
                 FtcDashboard.getInstance().startCameraStream(camera, 30);
             }
             @Override
