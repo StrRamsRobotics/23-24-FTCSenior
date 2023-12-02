@@ -37,11 +37,11 @@ public class AutoBootstrap extends LinearOpMode {
                 text1 = "Blue";
             }
             if (pad.y) {
-                side = LEFT;
+                side = BOARD;
                 text2 = "Left";
             }
             if (pad.a) {
-                side = RIGHT;
+                side = EDGE;
                 text2 = "Right";
             }
             tel.addData("Red or blue?", text1);

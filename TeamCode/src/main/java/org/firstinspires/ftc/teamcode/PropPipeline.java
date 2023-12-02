@@ -9,12 +9,15 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PropPipeline extends OpenCvPipeline {
-    public double x, y;
+    private Init.Side side; //side==Init.Side.BOARD means the centre prop is to the right of image, aka board auto
+    private double bound = 80;
+    public String ans="none";
     private Scalar lower, upper, lower2, upper2;
-    public PropPipeline(Init.Team team) {
+    public PropPipeline(Init.Team team, Init.Side side) {
         if (team == Init.Team.RED) {
             lower = new Scalar(127,50,144);
             upper = new Scalar(180,112,255);
@@ -25,6 +28,8 @@ public class PropPipeline extends OpenCvPipeline {
             upper = new Scalar(109,115,255);
             lower2 = lower; upper2 = upper;
         }
+        this.side=side;
+
     }
     @Override
     public Mat processFrame(Mat input) {
@@ -35,29 +40,68 @@ public class PropPipeline extends OpenCvPipeline {
         Mat mask = new Mat(), mask2 = new Mat();
         Core.inRange(hsv, lower, upper, mask);
         Core.inRange(hsv, lower2, upper2, mask2);
-        //find contours using retr_tree
-        Mat hierarchy = new Mat();
-        List<MatOfPoint> contours = new ArrayList<>(), contours2 = new ArrayList<>();
-        Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-        Imgproc.findContours(mask2, contours2, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-        contours.addAll(contours2);
-        if (contours.size() > 0) {
-            MatOfPoint maxContour = contours.get(0);
-            for (MatOfPoint contour : contours) {
-                if (Imgproc.contourArea(contour) > Imgproc.contourArea(maxContour)) {
-                    maxContour = contour;
-                }
-            }
-            //find bounding rect
-            Rect rect = Imgproc.boundingRect(maxContour);
-            //draw rectangle
-            Imgproc.rectangle(input, rect, new Scalar(0, 255, 0), 2);
-            //get centre coord of rectangle
-            double x = rect.x + rect.width/2.0;
-            double y = rect.y + rect.height/2.0;
-            this.x=x; this.y=y;
+        Core.bitwise_or(mask, mask2, mask);
+        //get image width and height
+        int width = input.width();
+        int height = input.height();
+
+        Rect left = new Rect(0, 200, (int)bound, 190);
+        Rect centre = new Rect(side== Init.Side.BOARD ? 280 : 170, 200, side==Init.Side.BOARD ? 470 : 360, 190);
+        Rect right = new Rect((int)(width-bound), 200, (int)bound, 190);
+        Mat leftMat = new Mat(mask, left);
+        Mat centreMat = new Mat(mask, centre);
+        Mat rightMat = new Mat(mask, right);
+
+        Imgproc.line(input, new org.opencv.core.Point(bound, 0), new org.opencv.core.Point(bound, mask.height()), new Scalar(0,0,255), 2);
+        Imgproc.line(input, new org.opencv.core.Point(width-bound, 0), new org.opencv.core.Point(width-bound, mask.height()), new Scalar(0,0,255), 2);
+        Imgproc.line(input, new org.opencv.core.Point(0, 200), new org.opencv.core.Point(mask.width(), 200), new Scalar(0,0,255), 2);
+        Imgproc.line(input, new org.opencv.core.Point(0, 390), new org.opencv.core.Point(mask.width(), 390), new Scalar(0,0,255), 2);
+        Imgproc.line(input, new org.opencv.core.Point(side==Init.Side.BOARD ? 280 : 170, 200), new org.opencv.core.Point(side==Init.Side.BOARD ? 280 : 170, 390), new Scalar(255,0,0), 2);
+        Imgproc.line(input, new org.opencv.core.Point(side==Init.Side.BOARD ? 470 : 360, 200), new org.opencv.core.Point(side==Init.Side.BOARD ? 470 : 360, 390), new Scalar(255,0,0), 2);
+
+        List<MatOfPoint> contours_left = new ArrayList<>(), contours_centre = new ArrayList<>(), contours_right = new ArrayList<>();
+        Imgproc.findContours(leftMat, contours_left, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(centreMat, contours_centre, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(rightMat, contours_right, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        MatOfPoint l = findProp(contours_left, 300);
+        MatOfPoint c = findProp(contours_centre, 6400);
+        MatOfPoint r = findProp(contours_right, 300);
+        // offset l, c, and r by their respective rects
+        if (l != null) {
+            Rect lRect = Imgproc.boundingRect(l);
+            lRect.x += left.x;
+            lRect.y += left.y;
+            Imgproc.rectangle(input, lRect, new Scalar(0,255,0), 2);
         }
+        if (c != null) {
+            Rect cRect = Imgproc.boundingRect(c);
+            cRect.x += centre.x;
+            cRect.y += centre.y;
+            Imgproc.rectangle(input, cRect, new Scalar(0,255,0), 2);
+        }
+        if (r != null) {
+            Rect rRect = Imgproc.boundingRect(r);
+            rRect.x += right.x;
+            rRect.y += right.y;
+            Imgproc.rectangle(input, rRect, new Scalar(0,255,0), 2);
+        }
+        String defaultt = side==Init.Side.BOARD ? "right" : "left"; //sounds weird bc reversed
+        ans = l!=null? "left" : c!=null ? "centre" : r!=null ? "right" : defaultt;
+        
         return input;
 
+    }
+    private MatOfPoint findProp(List<MatOfPoint> contours, int area) {
+        if (contours.size() > 0) {
+            MatOfPoint a = Collections.max(contours, (o1, o2) -> (int) (Imgproc.contourArea(o1) - Imgproc.contourArea(o2)));
+            if (Imgproc.contourArea(a) < area) {
+                return null;
+            } else {
+                return a;
+            }
+        } else {
+            return null;
+        }
     }
 }
