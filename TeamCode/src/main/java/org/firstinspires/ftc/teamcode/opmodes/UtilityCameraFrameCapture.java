@@ -80,6 +80,7 @@ public class UtilityCameraFrameCapture extends LinearOpMode
     @Override
     public void runOpMode()
     {
+        Telemetry telemetry = FtcDashboard.getInstance().getTelemetry();
         VisionPortal portal;
         if (USING_WEBCAM)
         {

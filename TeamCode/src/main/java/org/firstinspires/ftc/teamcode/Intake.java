@@ -24,12 +24,11 @@ public class Intake {
            intake.setPower(0);
         }, 2000, TimeUnit.MILLISECONDS);
     }
-    public void release() {
-        intake.setPower(-0.9);
-        Executors.newSingleThreadExecutor().execute(()->{
-            tilt.setPosition(TILT_DOWN);
-        });
-
+    public void release() throws InterruptedException {
+        tilt.setPosition(0.7);
+        intake.setPower(0.9);
+        Thread.sleep(800);
+        intake.setPower(0);
     }
 
 }

@@ -64,35 +64,37 @@ public class Init {
         outtake = hardwareMap.get(Servo.class, "outtake");
         intakeTilt = hardwareMap.get(Servo.class, "intakeTilt");
 
-        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightClimb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftClimb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+//        frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+//        backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         leftClimb.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightClimb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftClimb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightClimb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftClimb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         out = new Outtake(hardwareMap);
         in = new Intake(hardwareMap);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -107,6 +109,5 @@ public class Init {
             @Override
             public void onError(int errorCode) {}
         });
-        FtcDashboard.getInstance().startCameraStream(camera, 30);
     }
 }

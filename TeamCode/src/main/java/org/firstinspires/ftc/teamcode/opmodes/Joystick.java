@@ -37,10 +37,10 @@ public class Joystick extends LinearOpMode {
             tel.update();
             if (Math.abs(lx)<0.1) lx = 0; if (Math.abs(ly)<0.1) ly=0; if (Math.abs(rx)<0.1) rx = 0;
             lx=smooth(lx);ly=smooth(ly); rx = smooth(rx); //rx+ry reverses when plugged in laptop
-//            Init.fl.setPower(Math.min(1, lx + ly+rx));
-//            Init.fr.setPower(Math.min(1, -lx + ly-rx));
-//            Init.bl.setPower(Math.min(1, -lx + ly+rx));
-//            Init.br.setPower(Math.min(1, lx + ly-rx));
+            Init.frontLeftDrive.setPower(Math.min(1, lx + ly+rx));
+            Init.frontRightDrive.setPower(Math.min(1, -lx + ly-rx));
+            Init.backLeftDrive.setPower(Math.min(1, -lx + ly+rx));
+            Init.backRightDrive.setPower(Math.min(1, lx + ly-rx));
          }
     }
     private float smooth(float in) {

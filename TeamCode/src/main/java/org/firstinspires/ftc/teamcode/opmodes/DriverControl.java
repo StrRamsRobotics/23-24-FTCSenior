@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Init;
 import org.firstinspires.ftc.teamcode.Outtake;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @TeleOp
 public class DriverControl extends LinearOpMode {
@@ -18,6 +21,8 @@ public class DriverControl extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Init.init(hardwareMap);
         slides = new Outtake(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
         Gamepad chassisControl = this.gamepad1;
         Gamepad armControl = this.gamepad2;
@@ -28,9 +33,9 @@ public class DriverControl extends LinearOpMode {
             double ly = -chassisControl.left_stick_y;
             double rx = chassisControl.right_stick_x;
 
-            if (Math.abs(lx)<0.1) lx = 0;
-            if (Math.abs(ly)<0.1) ly = 0;
-            if (Math.abs(rx)<0.1) rx = 0;
+            if (Math.abs(lx)<0.02) lx = 0;
+            if (Math.abs(ly)<0.02) ly = 0;
+            if (Math.abs(rx)<0.02) rx = 0;
             lx = smooth(lx);
             ly = smooth(ly);
             rx = smooth(rx); //rx+ry reverses when plugged in laptop
@@ -41,10 +46,8 @@ public class DriverControl extends LinearOpMode {
             telemetry.addData("intake: ", (chassisControl.right_bumper?0.9:0)-(chassisControl.left_bumper?0.9:0));
             telemetry.update();
 
-            Init.frontLeftDrive.setPower(Math.min(1, Math.max(-1, lx + ly + rx)));
-            Init.frontRightDrive.setPower(Math.min(1, Math.max(-1, -lx + ly - rx)));
-            Init.backLeftDrive.setPower(Math.min(1, Math.max(-1, -lx + ly + rx)));
-            Init.backRightDrive.setPower(Math.min(1, Math.max(-1, lx + ly - rx)));
+            drive.setWeightedDrivePower(new Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x));
+            drive.update();
 
             Init.leftClimb.setPower((chassisControl.y?1:0)-(chassisControl.a?1:0));
             Init.rightClimb.setPower((chassisControl.y?1:0)-(chassisControl.a?1:0));
