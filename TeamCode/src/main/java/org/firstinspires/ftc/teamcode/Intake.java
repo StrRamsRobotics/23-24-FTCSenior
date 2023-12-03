@@ -27,7 +27,7 @@ public class Intake {
     public void release(boolean centre) throws InterruptedException {
         tilt.setPosition(0.85);
         Thread.sleep(400);
-        intake.setPower(centre?0.4:0.85);
+        intake.setPower(centre?0.65:0.85);
         Thread.sleep(centre?1200:800);
         intake.setPower(0);
     }

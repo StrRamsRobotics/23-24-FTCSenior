@@ -7,13 +7,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Outtake {
     private static DcMotor leftSlide;
     private static DcMotor rightSlide;
-    private static Servo outtake;
+    private static Servo leftOuttake;
     public static final double EXTENSION_POS = 0.94, RETRACTION_POS = 0.43;
 
     public Outtake(HardwareMap hardwareMap) {
         this.leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
         this.rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
-        this.outtake = hardwareMap.get(Servo.class, "outtake");
+        this.leftOuttake = hardwareMap.get(Servo.class, "outtake");
     }
     public void extendAndRetract(int position, double power, double runServoDistance) {
         leftSlide.setTargetPosition(position);
@@ -23,8 +23,8 @@ public class Outtake {
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while (Math.abs(position-position())>runServoDistance);
-        outtake.setPosition(EXTENSION_POS); //setposition is blocking
-        outtake.setPosition(RETRACTION_POS);
+        leftOuttake.setPosition(EXTENSION_POS); //setposition is blocking
+        leftOuttake.setPosition(RETRACTION_POS);
         runSlide(0, 0.5);
     }
     public void runSlide(int position, double power) {
@@ -36,7 +36,7 @@ public class Outtake {
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     public void runServo(boolean extend) {
-        outtake.setPosition(extend?EXTENSION_POS:RETRACTION_POS);
+        leftOuttake.setPosition(extend?EXTENSION_POS:RETRACTION_POS);
     }
     public int position() {
         return (leftSlide.getCurrentPosition()+rightSlide.getCurrentPosition())/2;

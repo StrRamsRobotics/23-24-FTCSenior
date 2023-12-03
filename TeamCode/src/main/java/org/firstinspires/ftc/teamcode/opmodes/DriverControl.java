@@ -63,7 +63,7 @@ public class DriverControl extends LinearOpMode {
             slidePosition -= 20*armControl.left_stick_y;
             climbPosition += (chassisControl.a?10:0)-(chassisControl.y?10:0);
             Init.out.runSlide(slidePosition, 1);
-            Init.leftClimb.setPower((chassisControl.a?0.4:0)-(chassisControl.y?0.4:0));
+            Init.leftClimb.setPower((chassisControl.a?0.2:0)-(chassisControl.y?0.2:0));
             Init.rightClimb.setPower((chassisControl.a?0.4:0)-(chassisControl.y?0.4:0));
 //            Init.climb.runClimb(climbPosition, 1);
 //            Init.leftClimb.setPower(climbPosition/30);

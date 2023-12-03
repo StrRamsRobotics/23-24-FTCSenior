@@ -62,7 +62,12 @@ public class BoardBlueCentre extends LinearOpMode {
 //        TrajectorySequence traj3 = drive.trajectorySequenceBuilder(left2.end())
 //                .splineToConstantHeading(new Vector2d(56, 0), -Math.PI/2).build();
         tel.addData("done building trajs", "a"); tel.update();
+        while (opModeInInit()) {
+            tel.addData("prop", Init.prop.ans); tel.update();
+        }
+
         waitForStart();
+
         Init.intakeTilt.setPosition(0.1);
         switch (Init.prop.ans) {
             case "left":
@@ -84,7 +89,6 @@ public class BoardBlueCentre extends LinearOpMode {
                 drive.followTrajectory(right3);
                 break;
         }
-        tel.addData("prop", Init.prop.ans); tel.update();
         //Pose2d aprilCoords = Init.april.getCoords(2);
 //        tel.addData("xapril", aprilCoords.getX());
 //        tel.addData("yapril", aprilCoords.getY());

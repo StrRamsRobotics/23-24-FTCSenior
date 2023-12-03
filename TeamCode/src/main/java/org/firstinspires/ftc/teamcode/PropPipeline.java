@@ -9,6 +9,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class PropPipeline extends OpenCvPipeline {
         if (team == Init.Team.RED) {
             lower = new Scalar(127,50,144);
             upper = new Scalar(180,112,255);
-            lower2 = new Scalar(0,50,52);
+            lower2 = new Scalar(0,50,100);
             upper2 = new Scalar(15,150,206);
         } else if (team == Init.Team.BLUE) {
             lower = new Scalar(74,50,62);
@@ -46,7 +47,7 @@ public class PropPipeline extends OpenCvPipeline {
         int height = input.height();
 
         Rect left = new Rect(0, 200, (int)bound, 190);
-        Rect centre = new Rect(side== Init.Side.BOARD ? 280 : 170, 200, side==Init.Side.BOARD ? 470-280 : 360-170, 190);
+        Rect centre = new Rect(side== Init.Side.BOARD ? 250 : 140, 200, side==Init.Side.BOARD ? 470-250 : 360-140, 190);
         Rect right = new Rect((int)(width-bound), 200, (int)bound, 190);
         Mat leftMat = new Mat(mask, left);
         Mat centreMat = new Mat(mask, centre);
@@ -56,8 +57,8 @@ public class PropPipeline extends OpenCvPipeline {
         Imgproc.line(input, new org.opencv.core.Point(width-bound, 0), new org.opencv.core.Point(width-bound, mask.height()), new Scalar(0,0,255), 2);
         Imgproc.line(input, new org.opencv.core.Point(0, 200), new org.opencv.core.Point(mask.width(), 200), new Scalar(0,0,255), 2);
         Imgproc.line(input, new org.opencv.core.Point(0, 390), new org.opencv.core.Point(mask.width(), 390), new Scalar(0,0,255), 2);
-        Imgproc.line(input, new org.opencv.core.Point(side==Init.Side.BOARD ? 280 : 170, 200), new org.opencv.core.Point(side==Init.Side.BOARD ? 280 : 170, 390), new Scalar(255,0,0), 2);
-        Imgproc.line(input, new org.opencv.core.Point(side==Init.Side.BOARD ? 470 : 360, 200), new org.opencv.core.Point(side==Init.Side.BOARD ? 470 : 360, 390), new Scalar(255,0,0), 2);
+        Imgproc.line(input, new org.opencv.core.Point(side==Init.Side.BOARD ? 250 : 140, 200), new org.opencv.core.Point(side==Init.Side.BOARD ? 250 : 140, 390), new Scalar(255,0,0), 2);
+        Imgproc.line(input, new org.opencv.core.Point(side==Init.Side.BOARD ? 500 : 390, 200), new org.opencv.core.Point(side==Init.Side.BOARD ? 500 : 390, 390), new Scalar(255,0,0), 2);
 
         List<MatOfPoint> contours_left = new ArrayList<>(), contours_centre = new ArrayList<>(), contours_right = new ArrayList<>();
         Imgproc.findContours(leftMat, contours_left, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -67,28 +68,56 @@ public class PropPipeline extends OpenCvPipeline {
         MatOfPoint l = findProp(contours_left, 300);
         MatOfPoint c = findProp(contours_centre, 6400);
         MatOfPoint r = findProp(contours_right, 300);
-        // offset l, c, and r by their respective rects
-        if (l != null) {
-            Rect lRect = Imgproc.boundingRect(l);
-            lRect.x += left.x;
-            lRect.y += left.y;
-            Imgproc.rectangle(input, lRect, new Scalar(0,255,0), 2);
-        }
-        if (c != null) {
-            Rect cRect = Imgproc.boundingRect(c);
-            cRect.x += centre.x;
-            cRect.y += centre.y;
-            Imgproc.rectangle(input, cRect, new Scalar(0,255,0), 2);
-        }
-        if (r != null) {
-            Rect rRect = Imgproc.boundingRect(r);
-            rRect.x += right.x;
-            rRect.y += right.y;
-            Imgproc.rectangle(input, rRect, new Scalar(0,255,0), 2);
-        }
         String defaultt = side==Init.Side.BOARD ? "right" : "left"; //sounds weird bc reversed
-        ans = l!=null? "left" : c!=null ? "centre" : r!=null ? "right" : defaultt;
-        
+        MatOfPoint[] contours = {l,c,r};
+        Arrays.sort(contours, (MatOfPoint a, MatOfPoint b)->{
+            if (a==null&&b!=null) {
+                return 1;
+            } else if (a!=null&&b==null) {
+                return -1;
+            } else if (a==null&&b==null) {
+                return 0;
+            }
+                return Integer.compare((int) Imgproc.contourArea(b), (int) Imgproc.contourArea(a));
+        });
+        if (contours[0]==null) {
+            ans = defaultt;
+        } else {
+            ans = contours[0] == l ? "left" : contours[0] == c ? "centre" : contours[0] == r ? "right" : defaultt;
+        }
+        if (contours[0]!=null) {
+            Rect rect = Imgproc.boundingRect(contours[0]);
+            Imgproc.rectangle(input, rect, new Scalar(0,255,0),2);
+        }
+// offset l, c, and r by their respective rects
+//        if (l != null) {
+//            if ((c!=null&&Imgproc.contourArea(l)>Imgproc.contourArea(c))||(r!=null&&Imgproc.contourArea(l)>Imgproc.contourArea(r))) {
+//                ans = "left";
+//            }
+//            Rect lRect = Imgproc.boundingRect(l);
+//            lRect.x += left.x;
+//            lRect.y += left.y;
+//            Imgproc.rectangle(input, lRect, new Scalar(0,255,0), 2);
+//        }
+//        if (c != null) {
+//            if ((l!=null&&Imgproc.contourArea(c)>Imgproc.contourArea(l))||(r!=null&&Imgproc.contourArea(c)>Imgproc.contourArea(r))) {
+//                ans = "centre";
+//            }
+//            Rect cRect = Imgproc.boundingRect(c);
+//            cRect.x += centre.x;
+//            cRect.y += centre.y;
+//            Imgproc.rectangle(input, cRect, new Scalar(0,255,0), 2);
+//        }
+//        if (r != null) {
+//            if ((c!=null&&Imgproc.contourArea(r)>Imgproc.contourArea(c))||(l!=null&&Imgproc.contourArea(r)>Imgproc.contourArea(l))) {
+//                ans = "right";
+//            }
+//            Rect rRect = Imgproc.boundingRect(r);
+//            rRect.x += right.x;
+//            rRect.y += right.y;
+//            Imgproc.rectangle(input, rRect, new Scalar(0,255,0), 2);
+//        }
+//        if (l==null&&c==null&&r==null) ans = defaultt;
         return input;
 
     }
