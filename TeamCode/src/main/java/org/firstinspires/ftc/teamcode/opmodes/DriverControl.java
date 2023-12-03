@@ -68,7 +68,9 @@ public class DriverControl extends LinearOpMode {
 //            Init.climb.runClimb(climbPosition, 1);
 //            Init.leftClimb.setPower(climbPosition/30);
 //            Init.out.runServo(armControl.a); //4101
-            Init.outtake.setPosition(armControl.a?Init.out.EXTENSION_POS:Init.out.RETRACTION_POS);
+            Init.leftOuttake.setPosition(armControl.a?Init.out.EXTENSION_POS:Init.out.RETRACTION_POS);
+            Init.rightOuttake.setPosition(armControl.a?Init.out.EXTENSION_POS:Init.out.RETRACTION_POS);
+            Init.plane.setPosition(armControl.dpad_down&&armControl.dpad_left?Init.out.RETRACTION_POS:Init.out.EXTENSION_POS);
         }
     }
     private double smooth(double in) {

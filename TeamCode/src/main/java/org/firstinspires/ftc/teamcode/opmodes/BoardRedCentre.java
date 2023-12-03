@@ -17,45 +17,17 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @Autonomous
 public class BoardRedCentre extends LinearOpMode {
-    private volatile boolean doneTraj = false;
     @Override
     public void runOpMode() throws InterruptedException {
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
 //        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Init.init(hardwareMap);
         Init.prop = new PropPipeline(Init.Team.RED, Init.Side.EDGE);
+        Init.camera.setPipeline(Init.prop);
         drive.setPoseEstimate(new Pose2d(0, -2.3, Math.PI));
         //do vision here
-       // TrajectorySequence left1,left2,left3,centre1,centre2,centre3,right1,right2,right3;
+        // TrajectorySequence left1,left2,left3,centre1,centre2,centre3,right1,right2,right3;
 
-        TrajectorySequence left1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .splineToLinearHeading(new Pose2d(25, -0.6, -Math.toRadians(65)), -Math.toRadians(65))
-                .build();
-        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
-                .splineToLinearHeading(new Pose2d(28.3, -40.3, -Math.PI/2), Math.PI)
-                .build();
-        Trajectory left3 = drive.trajectoryBuilder(left2.end(), false)
-                .splineToConstantHeading(new Vector2d(0, -35), Math.PI/2)
-                .build();
-        Trajectory centre1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
-                .splineToLinearHeading(new Pose2d(20, 1, -Math.toRadians(165)), -Math.toRadians(165))
-                .build();
-        TrajectorySequence centre2 = drive.trajectorySequenceBuilder(centre1.end())
-                .splineToLinearHeading(new Pose2d(24, -40.3, -Math.PI/2), Math.PI)
-                .build();
-        TrajectorySequence centre3 = drive.trajectorySequenceBuilder(centre2.end())
-                .lineToConstantHeading(new Vector2d(24, -35))
-                .lineToConstantHeading(new Vector2d(0, -35))
-                .build();
-        Trajectory right1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
-                .lineToLinearHeading(new Pose2d(20, -0.1, Math.PI))
-                .build();
-        TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
-                .lineToLinearHeading(new Pose2d(1, -41.3, -Math.PI/2))
-                .build();
-        Trajectory right3 = drive.trajectoryBuilder(right2.end(), false)
-                .splineToConstantHeading(new Vector2d(0, -35), Math.PI/2)
-                .build();
 //        TrajectorySequence traj3 = drive.trajectorySequenceBuilder(left2.end())
 //                .splineToConstantHeading(new Vector2d(56, 0), -Math.PI/2).build();
         tel.addData("done building trajs", "a"); tel.update();
@@ -66,20 +38,48 @@ public class BoardRedCentre extends LinearOpMode {
         Init.intakeTilt.setPosition(0.2);
         switch (Init.prop.ans) {
             case "left":
+                TrajectorySequence left1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                        .splineToLinearHeading(new Pose2d(25, -0.6, -Math.toRadians(65)), -Math.toRadians(65))
+                        .build();
                 drive.followTrajectorySequence(left1);
+                TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
+                        .splineToLinearHeading(new Pose2d(28.3, -40.3, -Math.PI/2), Math.PI)
+                        .build();
                 drive.followTrajectorySequence(left2);
+                Trajectory left3 = drive.trajectoryBuilder(left2.end(), false)
+                        .splineToConstantHeading(new Vector2d(0, -35), Math.PI/2)
+                        .build();
                 in.release(false);
                 drive.followTrajectory(left3);
                 break;
             case "centre":
+                Trajectory centre1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
+                        .splineToLinearHeading(new Pose2d(20, 1, -Math.toRadians(165)), -Math.toRadians(165))
+                        .build();
                 drive.followTrajectory(centre1);
+                TrajectorySequence centre2 = drive.trajectorySequenceBuilder(centre1.end())
+                        .splineToLinearHeading(new Pose2d(24, -40.3, -Math.PI/2), Math.PI)
+                        .build();
                 drive.followTrajectorySequence(centre2);
+                TrajectorySequence centre3 = drive.trajectorySequenceBuilder(centre2.end())
+                        .lineToConstantHeading(new Vector2d(24, -35))
+                        .lineToConstantHeading(new Vector2d(0, -35))
+                        .build();
                 in.release(true);
                 drive.followTrajectorySequence(centre3);
                 break;
             case "right":
+                Trajectory right1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
+                        .lineToLinearHeading(new Pose2d(20, -0.1, Math.PI))
+                        .build();
                 drive.followTrajectory(right1);
+                TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
+                        .lineToLinearHeading(new Pose2d(1, -41.3, -Math.PI/2))
+                        .build();
                 drive.followTrajectorySequence(right2);
+                Trajectory right3 = drive.trajectoryBuilder(right2.end(), false)
+                        .splineToConstantHeading(new Vector2d(0, -35), Math.PI/2)
+                        .build();
                 in.release(false);
                 drive.followTrajectory(right3);
                 break;

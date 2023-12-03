@@ -37,7 +37,7 @@ public class Init {
     public static DcMotorEx rightClimb;
 
     public static CRServo intake;
-    public static Servo outtake, intakeTilt;
+    public static Servo leftOuttake, rightOuttake, intakeTilt, plane;
     public static Outtake out;
     public static Intake in;
     public static Climb climb;
@@ -57,8 +57,10 @@ public class Init {
         leftClimb = hardwareMap.get(DcMotorEx.class, "leftClimb");
 
         intake = hardwareMap.get(CRServo.class, "intake");
-        outtake = hardwareMap.get(Servo.class, "outtake");
+        leftOuttake = hardwareMap.get(Servo.class, "leftOuttake");
+        rightOuttake = hardwareMap.get(Servo.class, "rightOuttake");
         intakeTilt = hardwareMap.get(Servo.class, "intakeTilt");
+        plane = hardwareMap.get(Servo.class, "plane");
 
 //        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -71,6 +73,7 @@ public class Init {
 
         leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         leftClimb.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightOuttake.setDirection(Servo.Direction.REVERSE);
 
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
