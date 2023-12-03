@@ -13,19 +13,31 @@ public class Setup extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+//        Init.init(hardwareMap);
+//        waitForStart();
+//        Init.rightClimb.setPower(0.2);
+//        Init.leftClimb.setPower(0.2);
+//        Init.rightClimb.setTargetPosition(-3258);
+//        Init.leftClimb.setTargetPosition(-3258);
+//        Init.rightClimb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        Init.leftClimb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        while (Init.rightClimb.isBusy()) {
+//            Thread.sleep(10);
+//        }
+//        Init.leftClimb.setPower(0);
+//        Init.intakeTilt.setPosition(0);
+//        Init.outtake.setPosition(Outtake.RETRACTION_POS);
         Init.init(hardwareMap);
+        Init.leftClimb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
-        Init.rightClimb.setPower(0.2);
-        Init.leftClimb.setPower(0.2);
-        Init.rightClimb.setTargetPosition(-3258);
-        Init.leftClimb.setTargetPosition(-3258);
         Init.rightClimb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Init.leftClimb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Init.rightClimb.setTargetPosition(-3258);
+        Init.rightClimb.setPower(0.2);
+        Init.leftClimb.setPower(-0.2);
         while (Init.rightClimb.isBusy()) {
             Thread.sleep(10);
         }
         Init.leftClimb.setPower(0);
         Init.intakeTilt.setPosition(0);
-        Init.outtake.setPosition(Outtake.RETRACTION_POS);
     }
 }

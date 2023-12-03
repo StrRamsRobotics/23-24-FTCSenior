@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -32,14 +33,16 @@ public class Init {
     public static DcMotor backRightDrive;
     public static DcMotor leftSlide;
     public static DcMotor rightSlide;
-    public static DcMotor leftClimb;
-    public static DcMotor rightClimb;
+    public static DcMotorEx leftClimb;
+    public static DcMotorEx rightClimb;
 
     public static CRServo intake;
     public static Servo outtake, intakeTilt;
     public static Outtake out;
     public static Intake in;
+    public static Climb climb;
     public static AprilTagDriver april;
+    public static PropPipeline prop;
     public static void init(HardwareMap hardwareMap) {
         drive = new SampleMecanumDrive(hardwareMap);
         FtcDashboard.start(null);
@@ -50,8 +53,8 @@ public class Init {
         backRightDrive = hardwareMap.get(DcMotor.class, "backRight");
         rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
         leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
-        rightClimb = hardwareMap.get(DcMotor.class, "rightClimb");
-        leftClimb = hardwareMap.get(DcMotor.class, "leftClimb");
+        rightClimb = hardwareMap.get(DcMotorEx.class, "rightClimb");
+        leftClimb = hardwareMap.get(DcMotorEx.class, "leftClimb");
 
         intake = hardwareMap.get(CRServo.class, "intake");
         outtake = hardwareMap.get(Servo.class, "outtake");
@@ -66,30 +69,22 @@ public class Init {
         rightClimb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftClimb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-//        frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-//        backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         leftClimb.setDirection(DcMotorSimple.Direction.REVERSE);
 
-//        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightClimb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftClimb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-//        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightClimb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftClimb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         out = new Outtake(hardwareMap);
         in = new Intake(hardwareMap);
+        climb = new Climb(hardwareMap);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {

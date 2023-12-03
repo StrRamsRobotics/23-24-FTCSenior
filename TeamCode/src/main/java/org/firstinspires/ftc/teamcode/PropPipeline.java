@@ -46,7 +46,7 @@ public class PropPipeline extends OpenCvPipeline {
         int height = input.height();
 
         Rect left = new Rect(0, 200, (int)bound, 190);
-        Rect centre = new Rect(side== Init.Side.BOARD ? 280 : 170, 200, side==Init.Side.BOARD ? 470 : 360, 190);
+        Rect centre = new Rect(side== Init.Side.BOARD ? 280 : 170, 200, side==Init.Side.BOARD ? 470-280 : 360-170, 190);
         Rect right = new Rect((int)(width-bound), 200, (int)bound, 190);
         Mat leftMat = new Mat(mask, left);
         Mat centreMat = new Mat(mask, centre);

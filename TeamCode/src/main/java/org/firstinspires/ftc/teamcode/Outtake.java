@@ -8,7 +8,7 @@ public class Outtake {
     private static DcMotor leftSlide;
     private static DcMotor rightSlide;
     private static Servo outtake;
-    public static double EXTENSION_POS = 0.94, RETRACTION_POS = 0.43;
+    public static final double EXTENSION_POS = 0.94, RETRACTION_POS = 0.43;
 
     public Outtake(HardwareMap hardwareMap) {
         this.leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
@@ -35,8 +35,8 @@ public class Outtake {
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-    public void runServo(double position, double power) {
-        outtake.setPosition(position);
+    public void runServo(boolean extend) {
+        outtake.setPosition(extend?EXTENSION_POS:RETRACTION_POS);
     }
     public int position() {
         return (leftSlide.getCurrentPosition()+rightSlide.getCurrentPosition())/2;
