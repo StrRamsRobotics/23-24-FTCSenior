@@ -25,73 +25,72 @@ public class BoardBlueCentre extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Telemetry tel = FtcDashboard.getInstance().getTelemetry();
 //        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Init.init(hardwareMap);
         Init.prop = new PropPipeline(Init.Team.BLUE, Init.Side.BOARD);
         Init.camera.setPipeline(Init.prop);
         drive.setPoseEstimate(new Pose2d(0, 2.3, Math.PI));
         //do vision here
-        TrajectorySequence left1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(19, 4.5, Math.PI))
-                .build();
-        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
-                .splineToLinearHeading(new Pose2d(15, 40.3, Math.PI/2), Math.PI)
-                .build();
-        Trajectory left3 = drive.trajectoryBuilder(left2.end(), true)
-                .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
-                .build();
-        Trajectory centre1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
-                .splineToLinearHeading(new Pose2d(20, -1, Math.toRadians(165)), Math.toRadians(165))
-                .build();
-        TrajectorySequence centre2 = drive.trajectorySequenceBuilder(centre1.end())
-                .splineToLinearHeading(new Pose2d(20, 40.3, Math.PI/2), Math.PI)
-                .build();
-        Trajectory centre3 = drive.trajectoryBuilder(centre2.end(), true)
-                .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
-                .build();
-        Trajectory right1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
-                .splineToLinearHeading(new Pose2d(25, 4, Math.toRadians(65)), Math.toRadians(65))
-                .build();
-        TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
-                .lineToLinearHeading(new Pose2d(28.3, 41.3, Math.PI/2))
-                .build();
-        Trajectory right3 = drive.trajectoryBuilder(right2.end(), true)
-                .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
-                .build();
 //        TrajectorySequence traj3 = drive.trajectorySequenceBuilder(left2.end())
 //                .splineToConstantHeading(new Vector2d(56, 0), -Math.PI/2).build();
-        tel.addData("done building trajs", "a"); tel.update();
+         telemetry.addData("done building trajs", "a");  telemetry.update();
         while (opModeInInit()) {
-            tel.addData("prop", Init.prop.ans); tel.update();
+             telemetry.addData("prop", Init.prop.ans);  telemetry.update();
         }
 
         waitForStart();
 
-        Init.intakeTilt.setPosition(0.1);
+        Init.intakeTilt.setPosition(0.25);
         switch (Init.prop.ans) {
             case "left":
+                TrajectorySequence left1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                        .lineToLinearHeading(new Pose2d(19, 4.5, Math.PI))
+                        .build();
                 drive.followTrajectorySequence(left1);
+                TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
+                        .splineToLinearHeading(new Pose2d(16.5, 40.3, Math.PI/2), Math.PI)
+                        .build();
                 drive.followTrajectorySequence(left2);
+                Trajectory left3 = drive.trajectoryBuilder(left2.end(), true)
+                        .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
+                        .build();
                 in.release(false);
                 drive.followTrajectory(left3);
                 break;
             case "centre":
+                Trajectory centre1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
+                        .splineToLinearHeading(new Pose2d(25, -1, Math.toRadians(165)), Math.toRadians(-15))
+                        .build();
                 drive.followTrajectory(centre1);
+                TrajectorySequence centre2 = drive.trajectorySequenceBuilder(centre1.end())
+                        .splineToLinearHeading(new Pose2d(25, 40.7, Math.PI/2), Math.PI)
+                        .build();
                 drive.followTrajectorySequence(centre2);
+                Trajectory centre3 = drive.trajectoryBuilder(centre2.end(), true)
+                        .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
+                        .build();
                 in.release(true);
                 drive.followTrajectory(centre3);
                 break;
             case "right":
+                Trajectory right1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
+                        .splineToLinearHeading(new Pose2d(25, 4, Math.toRadians(65)), Math.toRadians(65))
+                        .build();
                 drive.followTrajectory(right1);
+                TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
+                        .lineToLinearHeading(new Pose2d(28.3, 42.0, Math.PI/2))
+                        .build();
                 drive.followTrajectorySequence(right2);
+                Trajectory right3 = drive.trajectoryBuilder(right2.end(), true)
+                        .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
+                        .build();
                 in.release(false);
                 drive.followTrajectory(right3);
                 break;
         }
         //Pose2d aprilCoords = Init.april.getCoords(2);
-//        tel.addData("xapril", aprilCoords.getX());
-//        tel.addData("yapril", aprilCoords.getY());
-//        tel.update();}
+//         telemetry.addData("xapril", aprilCoords.getX());
+//         telemetry.addData("yapril", aprilCoords.getY());
+//         telemetry.update();}
     }
 }

@@ -25,10 +25,11 @@ public class Intake {
         }, 2000, TimeUnit.MILLISECONDS);
     }
     public void release(boolean centre) throws InterruptedException {
-        tilt.setPosition(0.85);
-        Thread.sleep(400);
-        intake.setPower(centre?0.65:0.85);
+        tilt.setPosition(0.75);
+        Thread.sleep(1000);
+        intake.setPower(centre?-0.75:-0.85);
         Thread.sleep(centre?1200:800);
+        tilt.setPosition(0.24);
         intake.setPower(0);
     }
 

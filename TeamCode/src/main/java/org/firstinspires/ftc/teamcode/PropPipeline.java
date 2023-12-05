@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -20,13 +21,13 @@ public class PropPipeline extends OpenCvPipeline {
     private Scalar lower, upper, lower2, upper2;
     public PropPipeline(Init.Team team, Init.Side side) {
         if (team == Init.Team.RED) {
-            lower = new Scalar(127,50,144);
-            upper = new Scalar(180,112,255);
-            lower2 = new Scalar(0,50,100);
-            upper2 = new Scalar(15,150,206);
+            lower = new Scalar(127,30,144);
+            upper = new Scalar(180,70,255);
+            lower2 = new Scalar(0,30,100);
+            upper2 = new Scalar(15,70,206);
         } else if (team == Init.Team.BLUE) {
-            lower = new Scalar(74,50,62);
-            upper = new Scalar(109,115,255);
+            lower = new Scalar(82,25,30);
+            upper = new Scalar(109,108,201); //originally 1115
             lower2 = lower; upper2 = upper;
         }
         this.side=side;
@@ -42,30 +43,30 @@ public class PropPipeline extends OpenCvPipeline {
         Core.inRange(hsv, lower, upper, mask);
         Core.inRange(hsv, lower2, upper2, mask2);
         Core.bitwise_or(mask, mask2, mask);
+
+        //erode with 3x3 kernel
+//        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new org.opencv.core.Size(3,3));
+//        Imgproc.erode(mask, mask, kernel);
+//        Imgproc.dilate(mask, mask, kernel);
         //get image width and height
         int width = input.width();
         int height = input.height();
 
-        Rect left = new Rect(0, 200, (int)bound, 190);
-        Rect centre = new Rect(side== Init.Side.BOARD ? 250 : 140, 200, side==Init.Side.BOARD ? 470-250 : 360-140, 190);
-        Rect right = new Rect((int)(width-bound), 200, (int)bound, 190);
+        Rect left = new Rect(0, 190, (int)bound, 210);
+        Rect centre = new Rect(side== Init.Side.BOARD ? 250 : 140, 190, side==Init.Side.BOARD ? 500-250 : 390-140, 210);
+        Rect right = new Rect((int)(width-bound), 190, (int)bound, 210);
         Mat leftMat = new Mat(mask, left);
         Mat centreMat = new Mat(mask, centre);
         Mat rightMat = new Mat(mask, right);
 
-        Imgproc.line(input, new org.opencv.core.Point(bound, 0), new org.opencv.core.Point(bound, mask.height()), new Scalar(0,0,255), 2);
-        Imgproc.line(input, new org.opencv.core.Point(width-bound, 0), new org.opencv.core.Point(width-bound, mask.height()), new Scalar(0,0,255), 2);
-        Imgproc.line(input, new org.opencv.core.Point(0, 200), new org.opencv.core.Point(mask.width(), 200), new Scalar(0,0,255), 2);
-        Imgproc.line(input, new org.opencv.core.Point(0, 390), new org.opencv.core.Point(mask.width(), 390), new Scalar(0,0,255), 2);
-        Imgproc.line(input, new org.opencv.core.Point(side==Init.Side.BOARD ? 250 : 140, 200), new org.opencv.core.Point(side==Init.Side.BOARD ? 250 : 140, 390), new Scalar(255,0,0), 2);
-        Imgproc.line(input, new org.opencv.core.Point(side==Init.Side.BOARD ? 500 : 390, 200), new org.opencv.core.Point(side==Init.Side.BOARD ? 500 : 390, 390), new Scalar(255,0,0), 2);
+
 
         List<MatOfPoint> contours_left = new ArrayList<>(), contours_centre = new ArrayList<>(), contours_right = new ArrayList<>();
         Imgproc.findContours(leftMat, contours_left, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
         Imgproc.findContours(centreMat, contours_centre, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
         Imgproc.findContours(rightMat, contours_right, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        MatOfPoint l = findProp(contours_left, 300);
+        MatOfPoint l = findProp(contours_left, 300); //originslly 300
         MatOfPoint c = findProp(contours_centre, 6400);
         MatOfPoint r = findProp(contours_right, 300);
         String defaultt = side==Init.Side.BOARD ? "right" : "left"; //sounds weird bc reversed
@@ -87,8 +88,23 @@ public class PropPipeline extends OpenCvPipeline {
         }
         if (contours[0]!=null) {
             Rect rect = Imgproc.boundingRect(contours[0]);
+            if (contours[0]==l) {
+                rect.x += left.x; rect.y +=left.y;
+            }
+            if (contours[0]==c) {
+                rect.x += centre.x; rect.y +=centre.y;
+            }
+            if (contours[0]==r) {
+                rect.x += right.x; rect.y +=right.y;
+            }
             Imgproc.rectangle(input, rect, new Scalar(0,255,0),2);
         }
+        Imgproc.line(input, new Point(bound, 0), new Point(bound, input.height()), new Scalar(0,0,255), 2);
+        Imgproc.line(input, new Point(width-bound, 0), new Point(width-bound, input.height()), new Scalar(0,0,255), 2);
+        Imgproc.line(input, new Point(0, 190), new Point(input.width(), 190), new Scalar(0,0,255), 2);
+        Imgproc.line(input, new Point(0, 400), new Point(input.width(), 400), new Scalar(0,0,255), 2);
+        Imgproc.line(input, new Point(side==Init.Side.BOARD ? 250 : 140, 190), new Point(side==Init.Side.BOARD ? 250 : 140, 400), new Scalar(255,0,0), 2);
+        Imgproc.line(input, new Point(side==Init.Side.BOARD ? 500 : 390, 190), new Point(side==Init.Side.BOARD ? 500 : 390, 400), new Scalar(255,0,0), 2);
 // offset l, c, and r by their respective rects
 //        if (l != null) {
 //            if ((c!=null&&Imgproc.contourArea(l)>Imgproc.contourArea(c))||(r!=null&&Imgproc.contourArea(l)>Imgproc.contourArea(r))) {
@@ -118,7 +134,7 @@ public class PropPipeline extends OpenCvPipeline {
 //            Imgproc.rectangle(input, rRect, new Scalar(0,255,0), 2);
 //        }
 //        if (l==null&&c==null&&r==null) ans = defaultt;
-        return input;
+        return mask;
 
     }
     private MatOfPoint findProp(List<MatOfPoint> contours, int area) {

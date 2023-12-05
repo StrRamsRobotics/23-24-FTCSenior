@@ -8,13 +8,15 @@ public class Outtake {
     private static DcMotor leftSlide;
     private static DcMotor rightSlide;
     private static Servo leftOuttake, rightOuttake;
-    public static final double EXTENSION_POS = 0.94, RETRACTION_POS = 0.43;
+    public static final double EXTENSION_POS = 1, RETRACTION_POS = 0.43;
 
     public Outtake(HardwareMap hardwareMap) {
         this.leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
         this.rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
         this.leftOuttake = hardwareMap.get(Servo.class, "leftOuttake");
         this.rightOuttake = hardwareMap.get(Servo.class, "rightOuttake");
+        this.leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.rightOuttake.setDirection(Servo.Direction.REVERSE);
     }
     public void extendAndRetract(int position, double power, double runServoDistance) {

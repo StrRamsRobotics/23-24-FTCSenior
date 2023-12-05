@@ -35,30 +35,31 @@ public class BoardRedCentre extends LinearOpMode {
             tel.addData("prop", Init.prop.ans); tel.update();
         }
         waitForStart();
-        Init.intakeTilt.setPosition(0.2);
+        Init.intakeTilt.setPosition(0.25);
         switch (Init.prop.ans) {
             case "left":
-                TrajectorySequence left1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                        .splineToLinearHeading(new Pose2d(25, -0.6, -Math.toRadians(65)), -Math.toRadians(65))
+                Trajectory left1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
+                        .splineToLinearHeading(new Pose2d(26, -1.8, -Math.toRadians(65)), -Math.toRadians(65))
                         .build();
-                drive.followTrajectorySequence(left1);
+                drive.followTrajectory(left1);
                 TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
-                        .splineToLinearHeading(new Pose2d(28.3, -40.3, -Math.PI/2), Math.PI)
+                        .splineToLinearHeading(new Pose2d(32.6, -40.3, -Math.PI/2), Math.PI)
                         .build();
                 drive.followTrajectorySequence(left2);
-                Trajectory left3 = drive.trajectoryBuilder(left2.end(), false)
+                TrajectorySequence left3 = drive.trajectorySequenceBuilder(left2.end())
+                        .lineToConstantHeading(new Vector2d(28.3, -36.3))
                         .splineToConstantHeading(new Vector2d(0, -35), Math.PI/2)
                         .build();
                 in.release(false);
-                drive.followTrajectory(left3);
+                drive.followTrajectorySequence(left3);
                 break;
             case "centre":
                 Trajectory centre1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
-                        .splineToLinearHeading(new Pose2d(20, 1, -Math.toRadians(165)), -Math.toRadians(165))
+                        .splineToLinearHeading(new Pose2d(22, 1, -Math.toRadians(165)), Math.toRadians(165))
                         .build();
                 drive.followTrajectory(centre1);
                 TrajectorySequence centre2 = drive.trajectorySequenceBuilder(centre1.end())
-                        .splineToLinearHeading(new Pose2d(24, -40.3, -Math.PI/2), Math.PI)
+                        .splineToLinearHeading(new Pose2d(25, -40.8, -Math.PI/2), Math.PI)
                         .build();
                 drive.followTrajectorySequence(centre2);
                 TrajectorySequence centre3 = drive.trajectorySequenceBuilder(centre2.end())
@@ -70,18 +71,19 @@ public class BoardRedCentre extends LinearOpMode {
                 break;
             case "right":
                 Trajectory right1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
-                        .lineToLinearHeading(new Pose2d(20, -0.1, Math.PI))
+                        .lineToLinearHeading(new Pose2d(20, -2.6, Math.PI))
                         .build();
                 drive.followTrajectory(right1);
                 TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
-                        .lineToLinearHeading(new Pose2d(1, -41.3, -Math.PI/2))
+                        .lineToLinearHeading(new Pose2d(19, -41.3, -Math.PI/2))
                         .build();
                 drive.followTrajectorySequence(right2);
-                Trajectory right3 = drive.trajectoryBuilder(right2.end(), false)
+                TrajectorySequence right3 = drive.trajectorySequenceBuilder(right2.end())
+                        .lineToConstantHeading(new Vector2d(19, -37))
                         .splineToConstantHeading(new Vector2d(0, -35), Math.PI/2)
                         .build();
                 in.release(false);
-                drive.followTrajectory(right3);
+                drive.followTrajectorySequence(right3);
                 break;
         }
         //Pose2d aprilCoords = Init.april.getCoords(2);

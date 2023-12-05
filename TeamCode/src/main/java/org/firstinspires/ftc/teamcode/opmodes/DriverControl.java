@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -14,22 +15,30 @@ import org.firstinspires.ftc.teamcode.Init;
 import org.firstinspires.ftc.teamcode.Outtake;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
+import java.util.concurrent.Executors;
+
 @TeleOp
 public class DriverControl extends LinearOpMode {
-    static int slidePosition = 0;
-    static int climbPosition = 0;
+    private volatile boolean planing= false;
+    int slidePosition = 0; //static = persist between inits
+    int climbPosition = 0;
+    static final int slideMaxPos = 1900;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Init.init(hardwareMap);
+        Telemetry telemetry = FtcDashboard.getInstance().getTelemetry();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        while (!isStarted()) {
+            telemetry.addData("left slide", Init.leftSlide.getCurrentPosition());
+            telemetry.addData("right slide", Init.rightSlide.getCurrentPosition());
+            telemetry.addData("slide", slidePosition);
+            telemetry.update();
+        }
         waitForStart();
         Gamepad chassisControl = this.gamepad1;
         Gamepad armControl = this.gamepad2;
-        Telemetry telemetry = FtcDashboard.getInstance().getTelemetry();
-
         while (opModeIsActive()) {
             double lx = chassisControl.left_stick_x;
             double ly = -chassisControl.left_stick_y;
@@ -45,9 +54,7 @@ public class DriverControl extends LinearOpMode {
             telemetry.addData("left x", lx);
             telemetry.addData("left y", ly);
             telemetry.addData("right x", rx);
-            telemetry.addData("intake: ", (chassisControl.right_bumper?0.9:0)-(chassisControl.left_bumper?0.9:0));
-            telemetry.addData("rightClimb: ", Init.rightClimb.getCurrent(CurrentUnit.AMPS));
-            telemetry.addData("leftClimb: ", Init.rightClimb.getCurrent(CurrentUnit.AMPS));
+//            telemetry.addData("intake: ", (chassisControl.right_bumper?0.9:0)-(chassisControl.left_bumper?0.9:0));
             telemetry.update();
 
             drive.setWeightedDrivePower(new Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x));
@@ -55,22 +62,61 @@ public class DriverControl extends LinearOpMode {
 
             telemetry.addData("left climb", Init.leftClimb.getCurrentPosition());
             telemetry.addData("right climb", Init.rightClimb.getCurrentPosition());
+            telemetry.addData("left slide", Init.leftSlide.getCurrentPosition());
+            telemetry.addData("right slide", Init.rightSlide.getCurrentPosition());
             telemetry.update();
 
-            Init.intakeTilt.setPosition(1-chassisControl.left_trigger);
-            Init.intake.setPower((chassisControl.right_bumper?0.7:0)-(chassisControl.left_bumper?0.7:0));
+//            Init.intakeTilt.setPosition(1-armControl.left_trigger);
+            if (armControl.dpad_up) Init.intakeTilt.setPosition(0.91);
+            else if (armControl.dpad_down) Init.intakeTilt.setPosition(1);
+            Init.intake.setPower((armControl.left_bumper?0.7:0)-(armControl.right_bumper?0.7:0));
 
-            slidePosition -= 20*armControl.left_stick_y;
-            climbPosition += (chassisControl.a?10:0)-(chassisControl.y?10:0);
-            Init.out.runSlide(slidePosition, 1);
-            Init.leftClimb.setPower((chassisControl.a?0.2:0)-(chassisControl.y?0.2:0));
-            Init.rightClimb.setPower((chassisControl.a?0.4:0)-(chassisControl.y?0.4:0));
-//            Init.climb.runClimb(climbPosition, 1);
-//            Init.leftClimb.setPower(climbPosition/30);
-//            Init.out.runServo(armControl.a); //4101
-            Init.leftOuttake.setPosition(armControl.a?Init.out.EXTENSION_POS:Init.out.RETRACTION_POS);
-            Init.rightOuttake.setPosition(armControl.a?Init.out.EXTENSION_POS:Init.out.RETRACTION_POS);
-            Init.plane.setPosition(armControl.dpad_down&&armControl.dpad_left?Init.out.RETRACTION_POS:Init.out.EXTENSION_POS);
+
+            if (armControl.y) {
+                Init.out.runSlide(slideMaxPos, 0.7);
+                slidePosition = slideMaxPos;
+            }
+            else if (armControl.a) {
+                Init.out.runSlide(0, 0.7);
+                slidePosition = 0;
+            } else {
+                slidePosition += 20*(Math.abs(armControl.left_trigger-armControl.right_trigger)>0.1?armControl.left_trigger-armControl.right_trigger:0);
+                slidePosition = Math.max(0, Math.min(slideMaxPos, slidePosition));
+                Init.out.runSlide(slidePosition, 1);
+            }
+            if (!planing) {
+                Init.leftClimb.setPower(chassisControl.left_trigger - (chassisControl.left_bumper ? 1 : 0));
+                Init.rightClimb.setPower(chassisControl.right_trigger - (chassisControl.right_bumper ? 1 : 0));
+            }
+            Init.leftOuttake.setPosition(armControl.b?Init.out.EXTENSION_POS:Init.out.RETRACTION_POS);
+            Init.rightOuttake.setPosition(armControl.b?Init.out.EXTENSION_POS:Init.out.RETRACTION_POS);
+//            Servo plane = hardwareMap.get(Servo.class, "plane");
+            if (chassisControl.dpad_down&&chassisControl.a&&!planing) {
+                planing=true;
+                Executors.newSingleThreadExecutor().execute(()->{
+                    Init.rightClimb.setTargetPosition(-7600);
+                    Init.rightClimb.setPower(1);
+                    Init.rightClimb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    while (Init.rightClimb.isBusy()) {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Init.plane.setPosition(0.43);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    Init.rightClimb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    planing = false;
+                });
+
+            } else if (!planing){
+                Init.plane.setPosition(0.87);
+            }
         }
     }
     private double smooth(double in) {
