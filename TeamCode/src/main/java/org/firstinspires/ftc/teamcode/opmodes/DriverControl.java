@@ -67,7 +67,7 @@ public class DriverControl extends LinearOpMode {
             telemetry.update();
 
 //            Init.intakeTilt.setPosition(1-armControl.left_trigger);
-            if (armControl.dpad_up) Init.intakeTilt.setPosition(0.91);
+            if (armControl.dpad_up) Init.intakeTilt.setPosition(0.65); //prev is .91
             else if (armControl.dpad_down) Init.intakeTilt.setPosition(1);
             Init.intake.setPower((armControl.left_bumper?0.7:0)-(armControl.right_bumper?0.7:0));
 
@@ -84,39 +84,39 @@ public class DriverControl extends LinearOpMode {
                 slidePosition = Math.max(0, Math.min(slideMaxPos, slidePosition));
                 Init.out.runSlide(slidePosition, 1);
             }
+            Init.leftClimb.setPower(chassisControl.left_trigger - (chassisControl.left_bumper ? 1 : 0));
             if (!planing) {
-                Init.leftClimb.setPower(chassisControl.left_trigger - (chassisControl.left_bumper ? 1 : 0));
                 Init.rightClimb.setPower(chassisControl.right_trigger - (chassisControl.right_bumper ? 1 : 0));
             }
             Init.leftOuttake.setPosition(armControl.b?Init.out.EXTENSION_POS:Init.out.RETRACTION_POS);
             Init.rightOuttake.setPosition(armControl.b?Init.out.EXTENSION_POS:Init.out.RETRACTION_POS);
 //            Servo plane = hardwareMap.get(Servo.class, "plane");
-            if (chassisControl.dpad_down&&chassisControl.a&&!planing) {
-                planing=true;
-                Executors.newSingleThreadExecutor().execute(()->{
-                    Init.rightClimb.setTargetPosition(-7600);
-                    Init.rightClimb.setPower(1);
-                    Init.rightClimb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    while (Init.rightClimb.isBusy()) {
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    Init.plane.setPosition(0.43);
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    Init.rightClimb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    planing = false;
-                });
-
-            } else if (!planing){
-                Init.plane.setPosition(0.87);
-            }
+//            if (chassisControl.dpad_down&&chassisControl.a&&!planing) {
+//                planing=true;
+//                Executors.newSingleThreadExecutor().execute(()->{
+//                    Init.rightClimb.setTargetPosition(-7600);
+//                    Init.rightClimb.setPower(1);
+//                    Init.rightClimb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                    while (Init.rightClimb.isBusy()) {
+//                        try {
+//                            Thread.sleep(10);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    Init.plane.setPosition(0.43);
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    Init.rightClimb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                    planing = false;
+//                });
+//
+//            } else if (!planing){
+//                Init.plane.setPosition(0.87);
+//            }
         }
     }
     private double smooth(double in) {

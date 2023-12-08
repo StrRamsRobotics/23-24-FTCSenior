@@ -10,24 +10,23 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence;
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 
+import java.util.concurrent.Executors;
+
 public class MyClass {
     public static void main(String[] args) {
         System.setProperty("sun.java2d.uiScale", "1.0");
         MeepMeep meepMeep = new MeepMeep(800);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                .setStartPose(new Pose2d(12, 36, Math.toRadians(0)))
+                .setStartPose(new Pose2d(24, 48, Math.toRadians(90)))
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(200, 200, Math.toRadians(1440), Math.toRadians(720), 15)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(12, -60, Math.PI/2))
-                        .lineTo(new Vector2d(12, -36))
-                        .turn(-Math.PI/2)
-                        //spin purple pixel out
-                        .lineToLinearHeading(new Pose2d(48, -36, 0))
-                        //slides out
-                        .lineTo(new Vector2d(56, -36))
+                .setConstraints(100, 100, Math.toRadians(1440), Math.toRadians(720), 15)
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(24, 48, -Math.PI/2))
+                        .splineTo(new Vector2d(56, 35), 0)
+                        .splineTo(new Vector2d(56, 4), -Math.PI/2)
+                        .splineTo(new Vector2d(56, -60), -Math.PI/2)
                         .build());
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
                 .setDarkMode(true)
                 .addEntity(myBot)
                 .start();

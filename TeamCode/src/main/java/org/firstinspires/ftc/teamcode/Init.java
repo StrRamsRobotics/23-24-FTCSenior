@@ -60,7 +60,7 @@ public class Init {
         leftOuttake = hardwareMap.get(Servo.class, "leftOuttake");
         rightOuttake = hardwareMap.get(Servo.class, "rightOuttake");
         intakeTilt = hardwareMap.get(Servo.class, "intakeTilt");
-        plane = hardwareMap.get(Servo.class, "plane");
+        //plane = hardwareMap.get(Servo.class, "plane"); todo readd once plane plugged in
 
 //        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
