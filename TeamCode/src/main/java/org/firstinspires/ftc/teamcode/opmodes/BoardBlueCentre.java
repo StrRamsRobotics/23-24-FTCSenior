@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import static org.firstinspires.ftc.teamcode.Init.drive;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower;
+import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -20,6 +22,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import static org.firstinspires.ftc.teamcode.Init.in;
 import static org.firstinspires.ftc.teamcode.Init.rightClimb;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.Executors;
 
 //left means near the board
@@ -43,31 +46,60 @@ public class BoardBlueCentre extends LinearOpMode {
 
         waitForStart();
 
-        Init.intakeTilt.setPosition(0.25);
+
 //        switch (Init.prop.ans) {
         switch ("left") {
             case "left":
                 TrajectorySequence left1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                         .lineToLinearHeading(new Pose2d(19, 4.5, Math.PI))
+                        .addDisplacementMarker(3, ()->{
+                            Executors.newSingleThreadExecutor().execute(()->{
+                                Init.intakeTilt.setPosition(0.45);
+                                Init.out.runSlide(150, 0.7);
+                                Init.rightOuttake.setPosition(0.47);
+                                Init.leftOuttake.setPosition(0.47);
+                            });
+                        })
                         .build();
                 drive.followTrajectorySequence(left1);
                 TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
                         .splineToLinearHeading(new Pose2d(16.5, 40.3, Math.PI/2), Math.PI)
                         .build();
                 drive.followTrajectorySequence(left2);
-                Init.intakeTilt.setPosition(0.65);
-                Trajectory left3 = drive.trajectoryBuilder(left2.end(), true)
-                        .splineToConstantHeading(new Vector2d(56, 35), -Math.PI/2)
-                        .splineToSplineHeading(new Pose2d(56, 4, -Math.PI/2), -Math.PI/2)
-                        .splineTo(new Vector2d(56, -60), -Math.PI/2)
-                        .build();
                 in.release(false);
-                drive.followTrajectory(left3);
-                Trajectory left4 = drive.trajectoryBuilder(left3.end())
-                        .splineToConstantHeading(new Vector2d(50, 35), Math.PI/2)
-                        .splineToLinearHeading(new Pose2d(24, 48, Math.PI/2), Math.PI)
+                Trajectory left3 = drive.trajectoryBuilder(left2.end(), true)
+                        .splineToConstantHeading(new Vector2d(52.5, 35), -Math.PI/2)
+                        .splineToSplineHeading(new Pose2d(52.5, 4, -Math.PI/2), -Math.PI/2)
+                        .splineToConstantHeading(new Vector2d(56.5, -65.5), -Math.PI/2)
                         .build();
-                drive.followTrajectory(left4);
+
+                TrajectoryFollower fol = drive.follower;
+                try {
+                    Field aderr = TrajectoryFollower.class.getDeclaredField("admissibleError");
+                    aderr.setAccessible(true);
+                    aderr.set(fol, new Pose2d(0.5, 0.5, Math.toRadians(0.01)));
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                in.outtakeWheel.setPower(1);
+
+                drive.followTrajectory(left3);
+                try {
+                    Field aderr = TrajectoryFollower.class.getDeclaredField("admissibleError");
+                    aderr.setAccessible(true);
+                    aderr.set(fol, new Pose2d(0.5, 0.5, Math.toRadians(5.0)));
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                Init.in.run(0);
+                Init.in.run(1);
+                Init.in.tilt.setPosition(0.24);
+                in.outtakeWheel.setPower(0);
+//                Trajectory left4 = drive.trajectoryBuilder(left3.end())
+//                        .splineToConstantHeading(new Vector2d(50, 35), Math.PI/2)
+//                        .splineToLinearHeading(new Pose2d(16.5, 40.3, Math.PI/2), Math.PI)
+//                        .build();
+//                drive.followTrajectory(left4);
                 break;
             case "centre":
                 Trajectory centre1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)

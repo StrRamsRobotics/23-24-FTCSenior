@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
+@Config
 public class Outtake {
     private static DcMotor leftSlide;
     private static DcMotor rightSlide;
     private static Servo leftOuttake, rightOuttake;
-    public static final double EXTENSION_POS = 1, RETRACTION_POS = 0.43;
+    public static double EXTENSION_POS = 1, RETRACTION_POS = 0.43;
 
     public Outtake(HardwareMap hardwareMap) {
         this.leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
