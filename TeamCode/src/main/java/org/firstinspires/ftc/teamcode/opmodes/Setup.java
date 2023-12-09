@@ -19,11 +19,13 @@ public class Setup extends LinearOpMode {
         Init.init(hardwareMap);
         Telemetry tel = FtcDashboard.getInstance().getTelemetry();
         waitForStart();
-        Init.intakeTilt.setPosition(0.45);
-        Init.out.runSlide(180, 0.7);
+//        Init.intakeTilt.setPosition(0.45);
+//        Init.out.runSlide(180, 0.7);
         Init.rightOuttake.setPosition(0.47);
         Init.leftOuttake.setPosition(0.47);
         while (opModeIsActive()) {
+            Init.intake.setPower(0.7);
+            Init.outtakeWheel.setPower(0.7);
         }
     }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -36,7 +37,7 @@ public class Init {
     public static DcMotorEx leftClimb;
     public static DcMotorEx rightClimb;
 
-    public static CRServo intake;
+    public static CRServoImplEx intake, outtakeWheel;
     public static Servo leftOuttake, rightOuttake, intakeTilt, plane;
     public static Outtake out;
     public static Intake in;
@@ -56,7 +57,8 @@ public class Init {
         rightClimb = hardwareMap.get(DcMotorEx.class, "rightClimb");
         leftClimb = hardwareMap.get(DcMotorEx.class, "leftClimb");
 
-        intake = hardwareMap.get(CRServo.class, "intake");
+        intake = hardwareMap.get(CRServoImplEx.class, "intake");
+        outtakeWheel = hardwareMap.get(CRServoImplEx.class, "outtakeWheel");
         leftOuttake = hardwareMap.get(Servo.class, "leftOuttake");
         rightOuttake = hardwareMap.get(Servo.class, "rightOuttake");
         intakeTilt = hardwareMap.get(Servo.class, "intakeTilt");
