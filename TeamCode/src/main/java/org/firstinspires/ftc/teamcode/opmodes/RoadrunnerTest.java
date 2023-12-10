@@ -16,10 +16,17 @@ public class RoadrunnerTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Init.init(hardwareMap);
         waitForStart();
+        Init.rightOuttake.setPosition(0.47);
+        Init.leftOuttake.setPosition(0.47);
+        Init.intakeTilt.setPosition(0.3);
         TrajectorySequence test = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(48, 0, Math.PI))
+                .splineToSplineHeading(new Pose2d(48, 48, Math.PI), 0)
                 .build();
         drive.followTrajectorySequence(test);
+        TrajectorySequence test2=drive.trajectorySequenceBuilder(test.end())
+                .splineToSplineHeading(new Pose2d(0,0,0), 0)
+                .build();
+        drive.followTrajectorySequence(test2);
         while (opModeIsActive()) {}
 
     }

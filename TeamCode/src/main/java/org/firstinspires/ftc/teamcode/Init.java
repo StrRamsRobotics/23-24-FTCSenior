@@ -37,7 +37,7 @@ public class Init {
     public static DcMotorEx leftClimb;
     public static DcMotorEx rightClimb;
 
-    public static CRServoImplEx intake, outtakeWheel;
+    public static CRServoImplEx intake;
     public static Servo leftOuttake, rightOuttake, intakeTilt, plane;
     public static Outtake out;
     public static Intake in;
@@ -58,7 +58,6 @@ public class Init {
         leftClimb = hardwareMap.get(DcMotorEx.class, "leftClimb");
 
         intake = hardwareMap.get(CRServoImplEx.class, "intake");
-        outtakeWheel = hardwareMap.get(CRServoImplEx.class, "outtakeWheel");
         leftOuttake = hardwareMap.get(Servo.class, "leftOuttake");
         rightOuttake = hardwareMap.get(Servo.class, "rightOuttake");
         intakeTilt = hardwareMap.get(Servo.class, "intakeTilt");

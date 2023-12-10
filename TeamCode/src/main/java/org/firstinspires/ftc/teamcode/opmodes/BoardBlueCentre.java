@@ -17,6 +17,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Init;
 import org.firstinspires.ftc.teamcode.Intake;
 import org.firstinspires.ftc.teamcode.PropPipeline;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import static org.firstinspires.ftc.teamcode.Init.in;
@@ -45,56 +47,22 @@ public class BoardBlueCentre extends LinearOpMode {
         }
 
         waitForStart();
-
-
+        Init.rightOuttake.setPosition(0.47);
+        Init.leftOuttake.setPosition(0.47);
+        TrajectorySequence boardTraj=null;
 //        switch (Init.prop.ans) {
         switch ("left") {
             case "left":
                 TrajectorySequence left1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                         .lineToLinearHeading(new Pose2d(19, 4.5, Math.PI))
-                        .addDisplacementMarker(3, ()->{
-                            Executors.newSingleThreadExecutor().execute(()->{
-                                Init.intakeTilt.setPosition(0.45);
-                                Init.out.runSlide(150, 0.7);
-                                Init.rightOuttake.setPosition(0.47);
-                                Init.leftOuttake.setPosition(0.47);
-                            });
-                        })
                         .build();
                 drive.followTrajectorySequence(left1);
                 TrajectorySequence left2 = drive.trajectorySequenceBuilder(left1.end())
                         .splineToLinearHeading(new Pose2d(16.5, 40.3, Math.PI/2), Math.PI)
                         .build();
+                boardTraj = left2;
                 drive.followTrajectorySequence(left2);
                 in.release(false);
-                Trajectory left3 = drive.trajectoryBuilder(left2.end(), true)
-                        .splineToConstantHeading(new Vector2d(52.5, 35), -Math.PI/2)
-                        .splineToSplineHeading(new Pose2d(52.5, 4, -Math.PI/2), -Math.PI/2)
-                        .splineToConstantHeading(new Vector2d(56.5, -65.5), -Math.PI/2)
-                        .build();
-
-                TrajectoryFollower fol = drive.follower;
-                try {
-                    Field aderr = TrajectoryFollower.class.getDeclaredField("admissibleError");
-                    aderr.setAccessible(true);
-                    aderr.set(fol, new Pose2d(0.5, 0.5, Math.toRadians(0.01)));
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                in.outtakeWheel.setPower(1);
-
-                drive.followTrajectory(left3);
-                try {
-                    Field aderr = TrajectoryFollower.class.getDeclaredField("admissibleError");
-                    aderr.setAccessible(true);
-                    aderr.set(fol, new Pose2d(0.5, 0.5, Math.toRadians(5.0)));
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                Init.in.run(0);
-                Init.in.run(1);
-                Init.in.tilt.setPosition(0.24);
-                in.outtakeWheel.setPower(0);
 //                Trajectory left4 = drive.trajectoryBuilder(left3.end())
 //                        .splineToConstantHeading(new Vector2d(50, 35), Math.PI/2)
 //                        .splineToLinearHeading(new Pose2d(16.5, 40.3, Math.PI/2), Math.PI)
@@ -109,12 +77,13 @@ public class BoardBlueCentre extends LinearOpMode {
                 TrajectorySequence centre2 = drive.trajectorySequenceBuilder(centre1.end())
                         .splineToLinearHeading(new Pose2d(25, 40.7, Math.PI/2), Math.PI)
                         .build();
+                boardTraj = centre2;
                 drive.followTrajectorySequence(centre2);
-                Trajectory centre3 = drive.trajectoryBuilder(centre2.end(), true)
-                        .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
-                        .build();
-                in.release(true);
-                drive.followTrajectory(centre3);
+//                Trajectory centre3 = drive.trajectoryBuilder(centre2.end(), true)
+//                        .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
+//                        .build();
+//                in.release(true);
+//                drive.followTrajectory(centre3);
                 break;
             case "right":
                 Trajectory right1 = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
@@ -124,13 +93,51 @@ public class BoardBlueCentre extends LinearOpMode {
                 TrajectorySequence right2 = drive.trajectorySequenceBuilder(right1.end())
                         .lineToLinearHeading(new Pose2d(28.3, 42.0, Math.PI/2))
                         .build();
+                boardTraj = right2;
                 drive.followTrajectorySequence(right2);
-                Trajectory right3 = drive.trajectoryBuilder(right2.end(), true)
-                        .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
-                        .build();
-                in.release(false);
-                drive.followTrajectory(right3);
+//                Trajectory right3 = drive.trajectoryBuilder(right2.end(), true)
+//                        .splineToConstantHeading(new Vector2d(0, 35), -Math.PI/2)
+//                        .build();
+//                in.release(false);
+//                drive.followTrajectory(right3);
                 break;
+        }
+        Trajectory white1 = drive.trajectoryBuilder(boardTraj.end(), true)
+                .splineToSplineHeading(new Pose2d(52, 12,-Math.PI/2+0.0001), -Math.PI/2)
+                .splineToConstantHeading(new Vector2d(56, -66), -Math.PI/2)
+                .build();
+
+        TrajectoryFollower fol = drive.follower;
+        try {
+            Field aderr = TrajectoryFollower.class.getDeclaredField("admissibleError");
+            Field tmo = TrajectoryFollower.class.getDeclaredField("timeout");
+            tmo.setAccessible(true);
+            aderr.setAccessible(true);
+            tmo.set(fol, 2);
+            aderr.set(fol, new Pose2d(0.01, 0.01, Math.toRadians(0.01)));
+            telemetry.addData("timeout", tmo.get(fol));
+            telemetry.update();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        drive.followTrajectory(white1);
+        try {
+            Field aderr = TrajectoryFollower.class.getDeclaredField("admissibleError");
+            Field tmo = TrajectoryFollower.class.getDeclaredField("timeout");
+            tmo.setAccessible(true);
+            aderr.setAccessible(true);
+            aderr.set(fol, new Pose2d(0.5, 0.5, Math.toRadians(5.0)));
+            tmo.set(fol, 0.5);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+/*        Init.rightOuttake.setPosition(0.47);
+        Init.leftOuttake.setPosition(0.47);
+        Init.in.run(0);
+        Init.in.run(1);
+        Init.in.intake.setPower(0.7);*/
+        while (opModeIsActive()) {
         }
         //Pose2d aprilCoords = Init.april.getCoords(2);
 //         telemetry.addData("xapril", aprilCoords.getX());

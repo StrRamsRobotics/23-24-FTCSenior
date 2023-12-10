@@ -17,13 +17,12 @@ public class MyClass {
         System.setProperty("sun.java2d.uiScale", "1.0");
         MeepMeep meepMeep = new MeepMeep(800);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                .setStartPose(new Pose2d(24, 48, Math.toRadians(90)))
+                .setStartPose(new Pose2d(24, 48, Math.PI/2))
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(100, 100, Math.toRadians(1440), Math.toRadians(720), 15)
                 .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(24, 48, -Math.PI/2))
-                        .splineToConstantHeading(new Vector2d(53.5, 35), -Math.PI/2)
-                        .splineToSplineHeading(new Pose2d(53.5, 4, -Math.PI/2), -Math.PI/2)
-                        .splineToConstantHeading(new Vector2d(58, -65.5), -Math.PI/2)
+                        .splineToSplineHeading(new Pose2d(52, 12,-Math.PI/2+0.0001), -Math.PI/2)
+                        .splineToConstantHeading(new Vector2d(56.5, -66), -Math.PI/2)
                         .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)

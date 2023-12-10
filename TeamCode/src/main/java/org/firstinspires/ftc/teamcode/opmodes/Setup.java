@@ -25,7 +25,7 @@ public class Setup extends LinearOpMode {
         Init.leftOuttake.setPosition(0.47);
         while (opModeIsActive()) {
             Init.intake.setPower(0.7);
-            Init.outtakeWheel.setPower(0.7);
+            //Init.outtakeWheel.setPower(0.7);
         }
     }
 }
